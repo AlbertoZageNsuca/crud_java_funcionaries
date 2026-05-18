@@ -5,6 +5,7 @@ import com.grupoSI.crudApp.database.model.Funcionary;
 import com.grupoSI.crudApp.database.repository.DepartamentRepository;
 import com.grupoSI.crudApp.service.FuncionaryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,11 @@ public class FuncionaryController {
 
     private final FuncionaryService funcionaryService;
     private final DepartamentRepository departamentRepository;
+
+    public FuncionaryController(FuncionaryService funcionaryService, DepartamentRepository departamentRepository) {
+        this.funcionaryService = funcionaryService;
+        this.departamentRepository = departamentRepository;
+    }
 
     // ─── READ (Listar todos) ──────────────────────────────────────────────────
 

@@ -49,5 +49,91 @@ public class Funcionary {
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLocalization() {
+        return localization;
+    }
+
+    public void setLocalization(String localization) {
+        this.localization = localization;
+    }
+
+    public String getOcupation() {
+        return ocupation;
+    }
+
+    public void setOcupation(String ocupation) {
+        this.ocupation = ocupation;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public byte getProfileImg() {
+        return profileImg;
+    }
+
+    public void setProfileImg(byte profileImg) {
+        this.profileImg = profileImg;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+
+    public Departament getDepartament() {
+        return departament;
+    }
+
+    public void setDepartament(Departament departament) {
+        this.departament = departament;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

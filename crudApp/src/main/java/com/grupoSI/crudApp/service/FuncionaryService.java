@@ -20,6 +20,12 @@ public class FuncionaryService {
     private final DepartamentRepository departamentRepository;
     private final UserRepository userRepository;
 
+    public FuncionaryService(FuncionaryRepository funcionaryRepository, DepartamentRepository departamentRepository, UserRepository userRepository) {
+        this.funcionaryRepository = funcionaryRepository;
+        this.departamentRepository = departamentRepository;
+        this.userRepository = userRepository;
+    }
+
     // ─── CREATE ───────────────────────────────────────────────────────────────
 
     /**
