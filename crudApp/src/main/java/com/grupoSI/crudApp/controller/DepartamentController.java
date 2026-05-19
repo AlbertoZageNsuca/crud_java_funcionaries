@@ -17,9 +17,6 @@ public class DepartamentController {
 
     private final DepartamentService departamentService;
 
-    public DepartamentController(DepartamentService departamentService) {
-        this.departamentService = departamentService;
-    }
 
     @GetMapping
     public String listar(Model model) {

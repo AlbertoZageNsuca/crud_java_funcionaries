@@ -137,7 +137,7 @@
                             <td>
                                 <span class="badge badge-depto rounded-pill px-2 py-1" th:text="${f.departament?.name ?: '—'}">Depto</span>
                             </td>
-                            <td th:text="${'R$ ' + #numbers.formatDecimal(f.salary, 1, 2, 'POINT', 'COMMA')}">Salário</td>
+                            <td th:text="'R$ ' + ${#numbers.formatDecimal(f.salary, 1, 2)}"></td>
                             <td th:text="${f.birthDate != null ? #temporals.format(f.birthDate, 'dd/MM/yyyy') : '—'}">Data</td>
                             <td class="text-end pe-4">
                                 <a th:href="@{/funcionarios/{id}/editar(id=${f.id})}"
