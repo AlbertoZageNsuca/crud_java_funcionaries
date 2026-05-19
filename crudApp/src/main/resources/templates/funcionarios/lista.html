@@ -1,10 +1,351 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Funcionários — GrupoSI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <style>
+        body { background: #f0f4f8; }
+        .sidebar { width: 240px; min-height: 100vh; background: #1e3a5f; position: fixed; top: 0; left: 0; z-index: 100; }
+        .sidebar .brand { padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+        .sidebar .nav-link { color: rgba(255,255,255,.75); padding: .6rem 1.25rem; border-radius: 8px; margin: .1rem .75rem;
+                              transition: all .2s; font-size: .9rem; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,.15); color: #fff; }
+        .sidebar .nav-link i { width: 20px; }
+        .main-content { margin-left: 240px; }
+        .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 2rem; }
+        .page-body { padding: 2rem; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+        .card-header { background: #fff; border-bottom: 1px solid #f1f5f9; border-radius: 12px 12px 0 0 !important; }
+        .table th { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+                     color: #64748b; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+        .table td { vertical-align: middle; font-size: .9rem; }
+        .badge-depto { background: #eff6ff; color: #2563eb; font-weight: 600; font-size: .75rem; }
+        .btn-action { width: 32px; height: 32px; padding: 0; border-radius: 8px; display: inline-flex;
+                       align-items: center; justify-content: center; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #dbeafe;
+                   display: flex; align-items: center; justify-content: center; color: #2563eb; font-weight: 700; font-size: .85rem; }
+        .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 .2rem rgba(37,99,235,.2); }
+        .btn-primary { background: #2563eb; border-color: #2563eb; }
+        .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+        @media(max-width:768px) { .sidebar { display: none; } .main-content { margin-left: 0; } }
+    </style>
 </head>
 <body>
-$END$
+
+<div class="sidebar d-flex flex-column">
+    <div class="brand">
+        <div class="d-flex align-items-center gap-2">
+            <div style="width:36px;height:36px;background:#2563eb;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-building-fill-gear text-white"></i>
+            </div>
+            <span class="text-white fw-bold fs-6">GrupoSI</span>
+        </div>
+    </div>
+    <nav class="flex-grow-1 pt-2">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/funcionarios}">
+                    <i class="bi bi-people-fill me-2"></i>Funcionários
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/departamentos}">
+                    <i class="bi bi-diagram-3-fill me-2"></i>Departamentos
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="p-3 border-top" style="border-color: rgba(255,255,255,.1) !important;">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <div class="avatar" style="background:#1d4ed8;color:#93c5fd;">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <span class="text-white-50 small text-truncate" sec:authentication="name">Usuário</span>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-sm w-100" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border:none;">
+                <i class="bi bi-box-arrow-right me-1"></i>Sair
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="topbar d-flex align-items-center justify-content-between">
+        <div>
+            <h5 class="mb-0 fw-bold text-dark">Funcionários</h5>
+            <small class="text-muted">Gerencie os funcionários cadastrados</small>
+        </div>
+        <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalNovoFuncionario">
+            <i class="bi bi-plus-lg me-1"></i>Novo Funcionário
+        </button>
+    </div>
+
+    <div class="page-body">
+        <div th:if="${sucesso}" class="alert alert-success alert-dismissible d-flex align-items-center gap-2 mb-3" role="alert">
+            <i class="bi bi-check-circle-fill"></i>
+            <span th:text="${sucesso}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${erro}" class="alert alert-danger alert-dismissible d-flex align-items-center gap-2 mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span th:text="${erro}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between p-3">
+        <span class="fw-semibold text-dark">
+          <i class="bi bi-people me-2 text-primary"></i>
+          Total: <span th:text="${#lists.size(funcionarios)}" class="text-primary fw-bold">0</span> funcionário(s)
+        </span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th class="ps-4">Funcionário</th>
+                            <th>E-mail</th>
+                            <th>Ocupação</th>
+                            <th>Departamento</th>
+                            <th>Salário</th>
+                            <th>Nascimento</th>
+                            <th class="text-end pe-4">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(funcionarios)}">
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                Nenhum funcionário cadastrado ainda.
+                            </td>
+                        </tr>
+                        <tr th:each="f : ${funcionarios}">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar" th:text="${#strings.substring(f.name, 0, 1).toUpperCase()}">A</div>
+                                    <span class="fw-semibold" th:text="${f.name}">Nome</span>
+                                </div>
+                            </td>
+                            <td class="text-muted" th:text="${f.email}">email</td>
+                            <td th:text="${f.ocupation ?: '—'}">Ocupação</td>
+                            <td>
+                                <span class="badge badge-depto rounded-pill px-2 py-1" th:text="${f.departament?.name ?: '—'}">Depto</span>
+                            </td>
+                            <td th:text="${'R$ ' + #numbers.formatDecimal(f.salary, 1, 2, 'POINT', 'COMMA')}">Salário</td>
+                            <td th:text="${f.birthDate != null ? #temporals.format(f.birthDate, 'dd/MM/yyyy') : '—'}">Data</td>
+                            <td class="text-end pe-4">
+                                <a th:href="@{/funcionarios/{id}/editar(id=${f.id})}"
+                                   class="btn btn-action btn-outline-primary me-1" title="Editar">
+                                    <i class="bi bi-pencil-fill" style="font-size:.75rem;"></i>
+                                </a>
+                                <form th:action="@{/funcionarios/{id}/eliminar(id=${f.id})}" method="post" class="d-inline"
+                                      onsubmit="return confirm('Confirma a remoção deste funcionário?')">
+                                    <button type="submit" class="btn btn-action btn-outline-danger" title="Remover">
+                                        <i class="bi bi-trash-fill" style="font-size:.75rem;"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo Funcionário -->
+<div class="modal fade" id="modalNovoFuncionario" tabindex="-1" aria-labelledby="modalNovoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;border:none;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalNovoLabel">
+                    <i class="bi bi-person-plus-fill text-primary me-2"></i>Novo Funcionário
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/funcionarios/novo}" th:object="${novoFuncionario}" method="post" novalidate>
+                <div class="modal-body px-4 py-3">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Nome <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{name}"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                                   class="form-control" placeholder="Nome completo" minlength="3" maxlength="100" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">E-mail <span class="text-danger">*</span></label>
+                            <input type="email" th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                   class="form-control" placeholder="funcionario@empresa.com" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Ocupação</label>
+                            <input type="text" th:field="*{ocupation}"
+                                   th:classappend="${#fields.hasErrors('ocupation')} ? 'is-invalid'"
+                                   class="form-control" placeholder="Ex: Analista de Sistemas" maxlength="100"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('ocupation')}" th:errors="*{ocupation}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Localização</label>
+                            <input type="text" th:field="*{localization}"
+                                   class="form-control" placeholder="Ex: São Paulo, SP" maxlength="150"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Data de Nascimento <span class="text-danger">*</span></label>
+                            <input type="date" th:field="*{birthDate}"
+                                   th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'"
+                                   class="form-control" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Telefone</label>
+                            <input type="text" th:field="*{phoneNumber}"
+                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
+                                   class="form-control" placeholder="Ex: 11999990000"
+                                   pattern="[0-9]{8,15}" title="Apenas dígitos (8 a 15)"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Salário (R$) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0.01" th:field="*{salary}"
+                                   th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
+                                   class="form-control" placeholder="0,00" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Departamento <span class="text-danger">*</span></label>
+                            <select name="departamentId"
+                                    th:classappend="${#fields.hasErrors('departament')} ? 'is-invalid'"
+                                    class="form-select" required>
+                                <option value="">— Selecione um departamento —</option>
+                                <option th:each="d : ${departamentos}" th:value="${d.id}" th:text="${d.name}">Depto</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('departament')}" th:errors="*{departament}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-floppy-fill me-2"></i>Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Funcionário -->
+<div class="modal fade" id="modalEditarFuncionario" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true"
+     th:if="${funcionarioEdit != null}">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:16px;border:none;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalEditarLabel">
+                    <i class="bi bi-pencil-fill text-primary me-2"></i>Editar Funcionário
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/funcionarios/{id}/editar(id=${funcionarioEdit.id})}"
+                  th:object="${funcionarioEdit}" method="post" novalidate>
+                <div class="modal-body px-4 py-3">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Nome <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{name}"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                                   class="form-control" minlength="3" maxlength="100" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">E-mail <span class="text-danger">*</span></label>
+                            <input type="email" th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                   class="form-control" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Ocupação</label>
+                            <input type="text" th:field="*{ocupation}"
+                                   class="form-control" maxlength="100"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Localização</label>
+                            <input type="text" th:field="*{localization}"
+                                   class="form-control" maxlength="150"/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Data de Nascimento <span class="text-danger">*</span></label>
+                            <input type="date" th:field="*{birthDate}"
+                                   th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'"
+                                   class="form-control" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Telefone</label>
+                            <input type="text" th:field="*{phoneNumber}"
+                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
+                                   class="form-control" pattern="[0-9]{8,15}"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small">Salário (R$) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0.01" th:field="*{salary}"
+                                   th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
+                                   class="form-control" required/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Departamento <span class="text-danger">*</span></label>
+                            <select name="departamentId"
+                                    th:classappend="${#fields.hasErrors('departament')} ? 'is-invalid'"
+                                    class="form-select" required>
+                                <option value="">— Selecione um departamento —</option>
+                                <option th:each="d : ${departamentos}"
+                                        th:value="${d.id}"
+                                        th:text="${d.name}"
+                                        th:selected="${funcionarioEdit.departament != null and funcionarioEdit.departament.id == d.id}">Depto</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('departament')}" th:errors="*{departament}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4">
+                    <a th:href="@{/funcionarios}" class="btn btn-light px-4">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-floppy-fill me-2"></i>Atualizar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const abrirModalNovo = /*[[${abrirModalNovo}]]*/ false;
+    const abrirModalEditar = /*[[${abrirModalEditar}]]*/ null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (abrirModalNovo) {
+        new bootstrap.Modal(document.getElementById('modalNovoFuncionario')).show();
+      }
+      if (abrirModalEditar) {
+        const el = document.getElementById('modalEditarFuncionario');
+        if (el) new bootstrap.Modal(el).show();
+      }
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

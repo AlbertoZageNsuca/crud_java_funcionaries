@@ -20,22 +20,6 @@ public class FuncionaryService {
     private final DepartamentRepository departamentRepository;
     private final UserRepository userRepository;
 
-    public FuncionaryService(FuncionaryRepository funcionaryRepository, DepartamentRepository departamentRepository, UserRepository userRepository) {
-        this.funcionaryRepository = funcionaryRepository;
-        this.departamentRepository = departamentRepository;
-        this.userRepository = userRepository;
-    }
-
-    // ─── CREATE ───────────────────────────────────────────────────────────────
-
-    /**
-     * Cria e guarda um novo funcionário na base de dados.
-     *
-     * @param funcionary     Objeto Funcionary com os dados preenchidos
-     * @param departamentId  ID do departamento ao qual o funcionário pertence
-     * @param userId         ID do utilizador associado ao funcionário
-     * @return               O funcionário criado (com ID gerado)
-     */
     @Transactional
     public Funcionary save(Funcionary funcionary, Long departamentId, Long userId) {
         Departament departament = departamentRepository.findById(departamentId)
@@ -44,75 +28,47 @@ public class FuncionaryService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilizador não encontrado com ID: " + userId));
 
+        if (funcionaryRepository.existsByEmail(funcionary.getEmail())) {
+            throw new IllegalArgumentException("Já existe um funcionário com este e-mail.");
+        }
+
         funcionary.setDepartament(departament);
         funcionary.setUser(user);
-
         return funcionaryRepository.save(funcionary);
     }
 
-    // ─── READ ─────────────────────────────────────────────────────────────────
-
-    /**
-     * Retorna todos os funcionários (não eliminados pelo SoftDelete).
-     *
-     * @return Lista de funcionários
-     */
     public List<Funcionary> findAll() {
         return funcionaryRepository.findAll();
     }
 
-    /**
-     * Busca um funcionário pelo seu ID.
-     *
-     * @param id  ID do funcionário
-     * @return    O funcionário encontrado
-     * @throws RuntimeException se não encontrado
-     */
     public Funcionary findById(Long id) {
         return funcionaryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com ID: " + id));
     }
 
-    // ─── UPDATE ───────────────────────────────────────────────────────────────
-
-    /**
-     * Atualiza os dados de um funcionário existente.
-     *
-     * @param id             ID do funcionário a atualizar
-     * @param novosDados     Objeto com os novos dados
-     * @param departamentId  Novo departamento (pode ser o mesmo)
-     * @return               O funcionário atualizado
-     */
     @Transactional
     public Funcionary update(Long id, Funcionary novosDados, Long departamentId) {
-        Funcionary funcionaryExistente = findById(id);
+        Funcionary existente = findById(id);
 
         Departament departament = departamentRepository.findById(departamentId)
                 .orElseThrow(() -> new RuntimeException("Departamento não encontrado com ID: " + departamentId));
 
-        // Atualiza apenas os campos editáveis
-        funcionaryExistente.setName(novosDados.getName());
-        funcionaryExistente.setLocalization(novosDados.getLocalization());
-        funcionaryExistente.setOcupation(novosDados.getOcupation());
-        funcionaryExistente.setBirthDate(novosDados.getBirthDate());
-        funcionaryExistente.setEmail(novosDados.getEmail());
-        funcionaryExistente.setPhoneNumber(novosDados.getPhoneNumber());
-        funcionaryExistente.setSalary(novosDados.getSalary());
-        funcionaryExistente.setProfileImg(novosDados.getProfileImg());
-        funcionaryExistente.setDepartament(departament);
+        if (funcionaryRepository.existsByEmailAndIdNot(novosDados.getEmail(), id)) {
+            throw new IllegalArgumentException("Já existe outro funcionário com este e-mail.");
+        }
 
-        return funcionaryRepository.save(funcionaryExistente);
+        existente.setName(novosDados.getName());
+        existente.setLocalization(novosDados.getLocalization());
+        existente.setOcupation(novosDados.getOcupation());
+        existente.setBirthDate(novosDados.getBirthDate());
+        existente.setEmail(novosDados.getEmail());
+        existente.setPhoneNumber(novosDados.getPhoneNumber());
+        existente.setSalary(novosDados.getSalary());
+        existente.setDepartament(departament);
+
+        return funcionaryRepository.save(existente);
     }
 
-    // ─── DELETE ───────────────────────────────────────────────────────────────
-
-    /**
-     * Elimina (soft delete) um funcionário pelo ID.
-     * O Hibernate com @SoftDelete não apaga fisicamente o registo —
-     * apenas marca a coluna "deleted" como true.
-     *
-     * @param id  ID do funcionário a eliminar
-     */
     @Transactional
     public void delete(Long id) {
         Funcionary funcionary = findById(id);
