@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-custom sticky-top" style="background-color: #0f1f3d; padding: 0.85rem 1rem; box-shadow: 0 4px 20px rgba(15, 31, 61, 0.1);">
+    <style>
+        /* Estilos encapsulados para garantir consistência visual em qualquer view que inclua este fragmento */
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .navbar-custom .nav-link {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        .navbar-custom .nav-item.active .nav-link {
+            color: #fff;
+            background-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+        .navbar-custom .btn-logout {
+            color: #f87171;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1.5px solid rgba(248, 113, 113, 0.2);
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            transition: all 0.2s;
+            background: transparent;
+        }
+        .navbar-custom .btn-logout:hover {
+            background: #f87171;
+            color: #fff;
+            border-color: #f87171;
+        }
+        .avatar-navbar {
+            width: 32px; height: 32px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .85rem;
+        }
+    </style>
+
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/dashboard}">
+            <div class="bg-primary d-inline-flex p-2 rounded-3 text-white" style="box-shadow: 0 4px 12px rgba(37,99,235,.3);">
+                <i class="bi bi-building-fill-gear fs-6"></i>
+            </div>
+            <span class="ms-2">GrupoSI</span>
+        </a>
+
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="bi bi-list fs-2"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1">
+                <li class="nav-item" th:classappend="${#request.requestURI.startsWith('/dashboard')} ? 'active'">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="bi bi-grid-1x2-fill"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${#request.requestURI.startsWith('/funcionarios')} ? 'active'">
+                    <a class="nav-link" th:href="@{/funcionarios}">
+                        <i class="bi bi-people-fill"></i>Funcionários
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${#request.requestURI.startsWith('/departamentos')} ? 'active'">
+                    <a class="nav-link" th:href="@{/departamentos}">
+                        <i class="bi bi-diagram-3-fill"></i>Departamentos
+                    </a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 text-white">
+                    <div class="avatar-navbar"><i class="bi bi-person-fill"></i></div>
+                    <span class="text-white-50 small d-none d-sm-inline" sec:authentication="name">Usuário</span>
+                </div>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn-logout d-flex align-items-center gap-2">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>

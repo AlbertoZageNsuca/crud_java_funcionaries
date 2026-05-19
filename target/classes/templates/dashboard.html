@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard — GrupoSI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --navy:   #0f1f3d;
+            --blue:   #2563eb;
+            --blue-h: #1d4ed8;
+            --ice:    #f8fafc;
+            --ice-blue:#f0f5ff;
+            --bg:     #f4f7fb;
+            --border: #e2e8f0;
+            --muted:  #64748b;
+            --text:   #1e293b;
+            --green:  #059669;
+            --amber:  #d97706;
+            --red:    #dc2626;
+            --purple: #7c3aed;
+        }
+        * { font-family: 'Sora', sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ── Navbar Superior Customizada (Sem Sidebar) ── */
+        .navbar-custom {
+            background-color: var(--navy);
+            padding: 0.85rem 1rem;
+            box-shadow: 0 4px 20px rgba(15, 31, 61, 0.1);
+        }
+        .navbar-custom .navbar-brand {
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .navbar-custom .nav-link {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .navbar-custom .nav-link:hover {
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        .navbar-custom .nav-item.active .nav-link {
+            color: #fff;
+            background-color: var(--blue);
+            box-shadow: 0 4px 12px rgba(37,99,235,.25);
+        }
+        .navbar-custom .btn-logout {
+            color: #f87171;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1.5px solid rgba(248, 113, 113, 0.2);
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            transition: all 0.2s;
+            background: transparent;
+        }
+        .navbar-custom .btn-logout:hover {
+            background: #f87171;
+            color: #fff;
+            border-color: #f87171;
+        }
+        .avatar-navbar {
+            width: 32px; height: 32px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .85rem;
+        }
+
+        /* ── Main Layout ── */
+        .main-container {
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem;
+        }
+
+        /* ── Stat Cards ── */
+        .stat-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(15, 31, 61, 0.03);
+            padding: 1.25rem 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            height: 100%;
+            transition: transform .18s, box-shadow .18s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(15, 31, 61, 0.06);
+        }
+        .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .stat-icon.blue   { background: var(--ice-blue);       color: var(--blue); }
+        .stat-icon.green  { background: #d1fae5;              color: var(--green); }
+        .stat-icon.amber  { background: #fef3c7;              color: var(--amber); }
+        .stat-icon.purple { background: #ede9fe;              color: var(--purple); }
+        .stat-icon.red    { background: #fee2e2;              color: var(--red); }
+
+        .stat-val {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.2;
+        }
+        .stat-lbl { font-size: .75rem; color: var(--muted); margin-top: .15rem; font-weight: 500; }
+
+        /* ── Section cards ── */
+        .section-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(15, 31, 61, 0.03);
+            overflow: hidden;
+        }
+        .section-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            background: #fafafa;
+        }
+        .section-title {
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--text);
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .section-title i { color: var(--blue); }
+
+        /* ── Top-paid list ── */
+        .rank-row {
+            display: flex; align-items: center; gap: .85rem;
+            padding: .85rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+        .rank-row:last-child { border-bottom: none; }
+        .rank-row:hover { background: #f8faff; }
+
+        .rank-num {
+            width: 24px; height: 24px;
+            border-radius: 6px;
+            font-size: .72rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .rank-num.gold   { background: #fef3c7; color: #92400e; }
+        .rank-num.silver { background: #f1f5f9; color: #475569; }
+        .rank-num.bronze { background: #ffedd5; color: #9a3412; }
+        .rank-num.other  { background: var(--ice-blue); color: var(--blue); }
+
+        .rank-avatar {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: var(--ice-blue);
+            color: var(--blue);
+            font-weight: 700; font-size: .78rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .rank-name  { font-size: .88rem; font-weight: 600; color: var(--text); }
+        .rank-depto { font-size: .75rem; color: var(--muted); }
+        .rank-sal   { font-size: .88rem; font-weight: 700; color: var(--green); margin-left: auto; white-space: nowrap; }
+
+        /* ── Dept list ── */
+        .dept-row {
+            display: flex; align-items: center; gap: .75rem;
+            padding: .85rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            transition: background .15s;
+        }
+        .dept-row:last-child { border-bottom: none; }
+        .dept-row:hover { background: #f8faff; }
+        .dept-chip {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            background: var(--ice-blue);
+            color: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: .95rem; flex-shrink: 0;
+        }
+        .dept-name { font-size: .88rem; font-weight: 600; color: var(--text); }
+
+        .dept-bar-wrap {
+            flex: 1;
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 99px;
+            overflow: hidden;
+            margin: 0 .75rem;
+        }
+        .dept-bar {
+            height: 100%;
+            background: var(--blue);
+            border-radius: 99px;
+            transition: width .6s ease;
+        }
+        .dept-count {
+            font-size: .78rem; font-weight: 700;
+            color: var(--blue);
+            white-space: nowrap;
+            background: var(--ice-blue);
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+        }
+
+        /* ── Summary strip ── */
+        .summary-strip {
+            background: linear-gradient(135deg, var(--navy) 0%, #1e3a6d 100%);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            display: flex; align-items: center; gap: 1rem;
+            box-shadow: 0 4px 20px rgba(15,31,61,0.15);
+        }
+        .summary-strip .si { font-size: 1.75rem; color: #fbbf24; }
+        .summary-strip .val { font-size: 1.35rem; font-weight: 700; color: #fff; }
+        .summary-strip .lbl { font-size: .75rem; color: rgba(255,255,255,.6); margin-bottom: 0.15rem; }
+
+        /* ── Tables Custom ── */
+        .table-custom { font-size: 0.9rem; }
+        .table-custom thead th {
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--muted);
+            background: #f8fafc;
+            border-bottom: 2px solid var(--border);
+            padding: .85rem 1rem;
+        }
+        .table-custom tbody td {
+            vertical-align: middle;
+            padding: 0.95rem 1rem;
+            color: #334155;
+        }
+
+        .empty-sm { padding: 3rem 1rem; text-align: center; color: var(--muted); font-size: .85rem; }
+        .empty-sm i { display: block; font-size: 2rem; opacity: .4; margin-bottom: .5rem; color: var(--blue); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/dashboard}">
+            <div class="bg-primary d-inline-flex p-2 rounded-3 text-white" style="box-shadow: 0 4px 12px rgba(37,99,235,.3);">
+                <i class="bi bi-building-fill-gear fs-6"></i>
+            </div>
+            <span class="ms-2">GrupoSI</span>
+        </a>
+
+        <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <i class="bi bi-list fs-2"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1">
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{/dashboard}"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/funcionarios}"><i class="bi bi-people-fill me-2"></i>Funcionários</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/departamentos}"><i class="bi bi-diagram-3-fill me-2"></i>Departamentos</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 text-white">
+                    <div class="avatar-navbar"><i class="bi bi-person-fill"></i></div>
+                    <span class="text-white-50 small d-none d-sm-inline" sec:authentication="name">Usuário</span>
+                </div>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn-logout d-flex align-items-center gap-2">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="container main-container">
+
+    <div class="row mb-4 align-items-center g-3">
+        <div class="col-12 col-sm-6">
+            <h4 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                <i class="bi bi-grid-1x2-fill text-primary"></i> Dashboard
+            </h4>
+            <p class="text-muted small mb-0">Visão geral e indicadores analíticos do sistema.</p>
+        </div>
+        <div class="col-12 col-sm-6 text-sm-end">
+            <span class="badge bg-white text-secondary border px-3 py-2 d-inline-flex align-items-center gap-2" style="border-radius: 10px; font-weight: 500;">
+                <i class="bi bi-calendar3 text-primary"></i>
+                <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}">hoje</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-sm-6 col-xl-4">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+                <div>
+                    <div class="stat-val" th:text="${totalFuncionarios}">0</div>
+                    <div class="stat-lbl">Funcionários Ativos</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-4">
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="bi bi-diagram-3-fill"></i></div>
+                <div>
+                    <div class="stat-val" th:text="${totalDepartamentos}">0</div>
+                    <div class="stat-lbl">Departamentos</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-4">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="bi bi-cash-stack"></i></div>
+                <div>
+                    <div class="stat-val" th:text="${'R$ ' + #numbers.formatDecimal(totalSalarios,1,2,'POINT','COMMA')}">R$ 0,00</div>
+                    <div class="stat-lbl">Folha de Pagamento Total</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-6">
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="bi bi-calculator-fill"></i></div>
+                <div>
+                    <div class="stat-val" th:text="${totalFuncionarios > 0 ? 'R$ ' + #numbers.formatDecimal(mediaSalario,1,2,'POINT','COMMA') : 'R$ 0,00'}">R$ 0,00</div>
+                    <div class="stat-lbl">Média Salarial Geral</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-xl-6">
+            <div class="stat-card">
+                <div class="stat-icon red"><i class="bi bi-trophy-fill"></i></div>
+                <div>
+                    <div class="stat-val" th:text="${maiorSalario != null ? 'R$ ' + #numbers.formatDecimal(maiorSalario,1,2,'POINT','COMMA') : '—'}">—</div>
+                    <div class="stat-lbl">Teto Salarial Cadastrado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-strip mb-4" th:if="${maisBemsalario != null}">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-star-fill si"></i>
+            <div>
+                <div class="lbl">Colaborador com maior remuneração</div>
+                <div class="val" th:text="${maisBemsalario.name}">—</div>
+            </div>
+        </div>
+        <div class="ms-auto text-end">
+            <div class="lbl"><i class="bi bi-diagram-3 me-1"></i><span th:text="${maisBemsalario.departament?.name ?: 'Sem depto'}">—</span></div>
+            <div class="val text-warning" th:text="${'R$ ' + #numbers.formatDecimal(maisBemsalario.salary,1,2,'POINT','COMMA')}">—</div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-7">
+            <div class="section-card h-100">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="bi bi-graph-up-arrow text-primary"></i> Top 5 — Maiores Salários
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                        <span th:text="${totalFuncionarios}">0</span> no total
+                    </span>
+                </div>
+                <div th:if="${#lists.isEmpty(top5Salarios)}">
+                    <div class="empty-sm"><i class="bi bi-inbox"></i>Nenhum dado salarial disponível</div>
+                </div>
+                <div th:each="f, i : ${top5Salarios}" class="rank-row">
+                    <div class="rank-num"
+                         th:classappend="${i.index == 0} ? 'gold' : (${i.index == 1} ? 'silver' : (${i.index == 2} ? 'bronze' : 'other'))"
+                         th:text="${i.count}">1</div>
+                    <div class="rank-avatar" th:text="${#strings.substring(f.name,0,1).toUpperCase()}">A</div>
+                    <div>
+                        <div class="rank-name" th:text="${f.name}">Nome</div>
+                        <div class="rank-depto">
+                            <i class="bi bi-diagram-3 me-1"></i>
+                            <span th:text="${f.departament?.name ?: 'Sem depto'}">—</span>
+                        </div>
+                    </div>
+                    <div class="rank-sal" th:text="${'R$ ' + #numbers.formatDecimal(f.salary,1,2,'POINT','COMMA')}">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+            <div class="section-card h-100">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="bi bi-pie-chart-fill text-primary"></i> Distribuição de Equipes
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                        <span th:text="${totalDepartamentos}">0</span> depto(s)
+                    </span>
+                </div>
+                <div th:if="${#lists.isEmpty(departamentos)}">
+                    <div class="empty-sm"><i class="bi bi-folder-x"></i>Nenhum departamento cadastrado</div>
+                </div>
+                <div th:each="d : ${departamentos}" class="dept-row">
+                    <div class="dept-chip"><i class="bi bi-diagram-3 text-primary"></i></div>
+                    <div style="min-width: 100px;">
+                        <div class="dept-name text-truncate" th:text="${d.name}">Depto</div>
+                    </div>
+                    <div class="dept-bar-wrap">
+                        <div class="dept-bar"
+                             th:style="${'width:' + (totalFuncionarios > 0 ? (#lists.size(d.funcionaryList) * 100 / totalFuncionarios) : 0) + '%'}"></div>
+                    </div>
+                    <div class="dept-count">
+                        <i class="bi bi-people small me-1"></i><span th:text="${#lists.size(d.funcionaryList)}">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="bi bi-clock-history text-primary"></i> Últimos Colaboradores Cadastrados
+            </div>
+            <a th:href="@{/funcionarios}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 fw-semibold px-3" style="font-size:.78rem; border-radius:8px;">
+                Ver todos <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(ultimosFuncionarios)}">
+            <div class="empty-sm"><i class="bi bi-person-x"></i>Nenhum funcionário registrado no sistema.</div>
+        </div>
+
+        <div class="table-responsive" th:if="${!#lists.isEmpty(ultimosFuncionarios)}">
+            <table class="table table-custom table-hover mb-0">
+                <thead>
+                <tr>
+                    <th class="ps-4">Funcionário</th>
+                    <th>Cargo</th>
+                    <th>Departamento</th>
+                    <th class="text-end pe-4">Salário</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="f : ${ultimosFuncionarios}">
+                    <td class="ps-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rank-avatar" th:text="${#strings.substring(f.name,0,1).toUpperCase()}">A</div>
+                            <span class="fw-semibold text-dark" th:text="${f.name}">Nome</span>
+                        </div>
+                    </td>
+                    <td class="text-muted" th:text="${f.ocupation ?: '—'}">—</td>
+                    <td>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 0.73rem; font-weight: 600;"
+                                  th:text="${f.departament?.name ?: '—'}">—</span>
+                    </td>
+                    <td class="text-end pe-4 fw-bold text-success"
+                        th:text="${'R$ ' + #numbers.formatDecimal(f.salary,1,2,'POINT','COMMA')}">—</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
