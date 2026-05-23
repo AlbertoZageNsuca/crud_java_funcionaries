@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>PDF Funcionários</title>
+
+    <style>
+        body { font-family: Arial; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 8px; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+
+<h2>Lista de Funcionários</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Ocupação</th>
+        <th>Departamento</th>
+    </tr>
+    </thead>
+
+    <tr th:each="f : ${funcionarios}">
+        <td th:text="${f.id != null ? f.id : 'N/A'}"></td>
+        <td th:text="${f.name != null ? f.name : ''}"></td>
+        <td th:text="${f.email != null ? f.email : ''}"></td>
+        <td th:text="${f.ocupation != null ? f.ocupation : ''}"></td>
+        <td th:text="${f.departament != null ? f.departament.name : ''}"></td>
+    </tr>
+</table>
+
+</body>
+</html>
