@@ -6,33 +6,46 @@ import com.grupoSI.crudApp.database.model.User;
 import com.grupoSI.crudApp.database.repository.DepartamentRepository;
 import com.grupoSI.crudApp.database.repository.FuncionaryRepository;
 import com.grupoSI.crudApp.database.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Service
-
 public class FuncionaryService {
 
     private final FuncionaryRepository funcionaryRepository;
     private final DepartamentRepository departamentRepository;
     private final UserRepository userRepository;
 
-    public FuncionaryService(FuncionaryRepository funcionaryRepository, DepartamentRepository departamentRepository, UserRepository userRepository) {
+    public FuncionaryService(FuncionaryRepository funcionaryRepository,
+                             DepartamentRepository departamentRepository,
+                             UserRepository userRepository) {
         this.funcionaryRepository = funcionaryRepository;
         this.departamentRepository = departamentRepository;
         this.userRepository = userRepository;
     }
 
+    // NOVO — lista só os funcionários do utilizador autenticado
+    public List<Funcionary> findByUser(Long userId) {
+        return funcionaryRepository.findByUserId(userId);
+    }
 
+    // Mantido para uso interno
+    public Funcionary findById(Long id) {
+        return funcionaryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com ID: " + id));
+    }
+
+    // NOVO — busca por ID garantindo que pertence ao utilizador (segurança)
+    public Funcionary findByIdAndUser(Long id, Long userId) {
+        return funcionaryRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado ou sem permissão."));
+    }
 
     @Transactional
     public Funcionary save(Funcionary funcionary, Long departamentId, Long userId) {
         Departament departament = departamentRepository.findById(departamentId)
                 .orElseThrow(() -> new RuntimeException("Departamento não encontrado com ID: " + departamentId));
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilizador não encontrado com ID: " + userId));
 
@@ -45,18 +58,10 @@ public class FuncionaryService {
         return funcionaryRepository.save(funcionary);
     }
 
-    public List<Funcionary> findAll() {
-        return funcionaryRepository.findAll();
-    }
-
-    public Funcionary findById(Long id) {
-        return funcionaryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com ID: " + id));
-    }
-
     @Transactional
-    public Funcionary update(Long id, Funcionary novosDados, Long departamentId) {
-        Funcionary existente = findById(id);
+    public Funcionary update(Long id, Funcionary novosDados, Long departamentId, Long userId) {
+        // Garante que o funcionário pertence ao utilizador autenticado
+        Funcionary existente = findByIdAndUser(id, userId);
 
         Departament departament = departamentRepository.findById(departamentId)
                 .orElseThrow(() -> new RuntimeException("Departamento não encontrado com ID: " + departamentId));
@@ -73,13 +78,13 @@ public class FuncionaryService {
         existente.setPhoneNumber(novosDados.getPhoneNumber());
         existente.setSalary(novosDados.getSalary());
         existente.setDepartament(departament);
-
         return funcionaryRepository.save(existente);
     }
 
     @Transactional
-    public void delete(Long id) {
-        Funcionary funcionary = findById(id);
+    public void delete(Long id, Long userId) {
+        // Garante que o funcionário pertence ao utilizador autenticado
+        Funcionary funcionary = findByIdAndUser(id, userId);
         funcionaryRepository.delete(funcionary);
     }
 }
