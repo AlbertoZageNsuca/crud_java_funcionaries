@@ -6,222 +6,81 @@
     <title>Criar Conta — GrupoSI</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
     <style>
-        :root {
-            --navy:   #0f1f3d;
-            --blue:   #2563eb;
-            --blue-h: #1d4ed8;
-            --ice:    #f0f5ff;
-            --muted:  #64748b;
-            --border: #dde4f0;
-        }
-        * { font-family: 'Sora', sans-serif; }
-
-        body {
-            background: var(--navy);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-        body::before, body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: .2;
-            pointer-events: none;
-        }
-        body::before {
-            width: 380px; height: 380px;
-            background: var(--blue);
-            top: -100px; right: -80px;
-        }
-        body::after {
-            width: 300px; height: 300px;
-            background: #0891b2;
-            bottom: -60px; left: -60px;
-        }
-
-        .card-auth {
-            background: #fff;
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 32px 80px rgba(0,0,0,.35);
-            width: 100%;
-            max-width: 460px;
-            position: relative;
-            z-index: 1;
-            animation: slideUp .45s ease both;
-        }
-        @keyframes slideUp {
-            from { opacity:0; transform: translateY(24px); }
-            to   { opacity:1; transform: translateY(0); }
-        }
-
-        .brand-badge {
-            width: 52px; height: 52px;
-            background: var(--blue);
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 1rem;
-            box-shadow: 0 8px 24px rgba(37,99,235,.4);
-        }
-
-        .form-label { font-size: .8rem; font-weight: 600; color: #374151; margin-bottom: .35rem; }
-
-        /* Input Group customizado e unificado */
-        .input-group-custom {
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            background: var(--ice);
-            transition: border-color .2s, box-shadow .2s;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            width: 100%;
-        }
-        .input-group-custom:focus-within {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-            background: #fff;
-        }
-
-        /* Estado de erro do Thymeleaf integrado ao grupo */
-        .input-group-custom.is-invalid-group {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
-        }
-
-        .input-group-text-custom {
-            background: transparent;
-            border: none;
-            color: var(--muted);
-            padding-left: 0.75rem;
-            padding-right: 0.5rem;
-            display: flex;
-            align-items: center;
-        }
-        .form-control-custom {
-            border: none;
-            background: transparent;
-            font-size: .9rem;
-            padding: 0.65rem 0.75rem 0.65rem 0;
-            flex: 1;
-            width: 100%;
-            color: #1e293b;
-        }
-        .form-control-custom:focus {
-            outline: none;
-            background: transparent;
-        }
-
-        .invalid-feedback-custom {
-            display: block;
-            width: 100%;
-            margin-top: 0.35rem;
-            font-size: .78rem;
-            color: #dc3545;
-            font-weight: 500;
-        }
-
-        .btn-primary {
-            background: var(--blue);
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: .9rem;
-            padding: .65rem;
-            transition: background .2s, transform .1s, box-shadow .2s;
-            box-shadow: 0 4px 16px rgba(37,99,235,.35);
-        }
-        .btn-primary:hover {
-            background: var(--blue-h);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(37,99,235,.45);
-        }
-        .btn-primary:active { transform: translateY(0); }
-
-        .hint-text { font-size: .76rem; color: var(--muted); margin-top: .4rem; display: flex; align-items: center; gap: 0.25rem; }
-        .divider-text { font-size: .78rem; color: var(--muted); }
-        a.link-auth { color: var(--blue); font-weight: 600; text-decoration: none; }
-        a.link-auth:hover { text-decoration: underline; }
-        .alert { font-size: .85rem; border-radius: 10px; border: none; }
+        body { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); min-height: 100vh; }
+        .card-auth { border: none; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+        .brand-icon { width: 56px; height: 56px; background: #2563eb; border-radius: 14px;
+                      display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 .2rem rgba(37,99,235,.25); }
+        .btn-primary { background: #2563eb; border-color: #2563eb; }
+        .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+        .input-group-text { background: #f8fafc; border-right: none; }
+        .form-control { border-left: none; }
+        .form-control.is-invalid { border-left: none; border-color: #dc3545; }
+        .invalid-feedback { font-size: .8rem; }
     </style>
 </head>
-<body>
-<div class="card-auth">
-    <div class="p-4 p-md-5">
-        <div class="brand-badge">
-            <i class="bi bi-person-plus-fill text-white fs-5"></i>
+<body class="d-flex align-items-center justify-content-center py-5">
+<div class="container" style="max-width: 460px;">
+    <div class="card card-auth">
+        <div class="card-body p-4 p-md-5">
+            <div class="brand-icon">
+                <i class="bi bi-person-plus text-white fs-4"></i>
+            </div>
+            <h4 class="text-center fw-bold text-dark mb-1">Criar nova conta</h4>
+            <p class="text-center text-muted small mb-4">Preencha os campos abaixo para se registrar</p>
+
+            <div th:if="${erroGeral}" class="alert alert-danger d-flex align-items-center gap-2 py-2">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span th:text="${erroGeral}"></span>
+            </div>
+
+            <form th:action="@{/register}" th:object="${user}" method="post" novalidate>
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-semibold small text-dark">Nome completo</label>
+                    <div class="input-group" th:classappend="${#fields.hasErrors('name')} ? 'has-validation'">
+                        <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
+                        <input type="text" id="name" th:field="*{name}"
+                               th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                               class="form-control" placeholder="João Silva"
+                               minlength="3" maxlength="100" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-semibold small text-dark">E-mail</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope text-muted"></i></span>
+                        <input type="email" id="email" th:field="*{email}"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                               class="form-control" placeholder="seu@email.com"
+                               maxlength="100" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-semibold small text-dark">Senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock text-muted"></i></span>
+                        <input type="password" id="password" th:field="*{password}"
+                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                               class="form-control" placeholder="Mínimo 6 caracteres"
+                               minlength="6" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <div class="form-text text-muted"><i class="bi bi-shield-lock me-1"></i>A senha deve ter no mínimo 6 caracteres.</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                    <i class="bi bi-person-check me-2"></i>Criar conta
+                </button>
+            </form>
+
+            <hr class="my-4"/>
+            <p class="text-center text-muted small mb-0">
+                Já tem uma conta?
+                <a th:href="@{/login}" class="text-primary fw-semibold text-decoration-none">Fazer login</a>
+            </p>
         </div>
-        <h5 class="text-center fw-bold text-dark mb-1">Criar conta</h5>
-        <p class="text-center mb-4" style="font-size:.82rem;color:var(--muted);">
-            <i class="bi bi-buildings me-1"></i>Registre-se no GrupoSI
-        </p>
-
-        <div th:if="${erroGeral}" class="alert alert-danger d-flex align-items-center gap-2 py-2 bg-danger-subtle text-danger">
-            <i class="bi bi-x-circle-fill flex-shrink-0"></i>
-            <span th:text="${erroGeral}"></span>
-        </div>
-
-        <form th:action="@{/register}" th:object="${user}" method="post" novalidate>
-            <div class="mb-3">
-                <label for="name" class="form-label">
-                    <i class="bi bi-person me-1"></i>Nome completo
-                </label>
-                <div class="input-group-custom" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid-group'">
-                    <span class="input-group-text-custom"><i class="bi bi-person-badge"></i></span>
-                    <input type="text" id="name" th:field="*{name}"
-                           class="form-control-custom" placeholder="João Silva"
-                           minlength="3" maxlength="100" required/>
-                </div>
-                <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">
-                    <i class="bi bi-envelope me-1"></i>E-mail
-                </label>
-                <div class="input-group-custom" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid-group'">
-                    <span class="input-group-text-custom"><i class="bi bi-at"></i></span>
-                    <input type="email" id="email" th:field="*{email}"
-                           class="form-control-custom" placeholder="seu@email.com"
-                           maxlength="100" required/>
-                </div>
-                <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="password" class="form-label">
-                    <i class="bi bi-lock me-1"></i>Senha
-                </label>
-                <div class="input-group-custom" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid-group'">
-                    <span class="input-group-text-custom"><i class="bi bi-key"></i></span>
-                    <input type="password" id="password" th:field="*{password}"
-                           class="form-control-custom" placeholder="Sua senha de acesso"
-                           minlength="6" required/>
-                </div>
-                <div class="invalid-feedback-custom" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-                <p class="hint-text" th:if="${!#fields.hasErrors('password')}">
-                    <i class="bi bi-shield-check text-success"></i>Mínimo de 6 caracteres
-                </p>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">
-                <i class="bi bi-person-check-fill me-2"></i>Criar conta
-            </button>
-        </form>
-
-        <hr class="my-4" style="border-color: var(--border)"/>
-        <p class="text-center mb-0 divider-text">
-            Já tem conta? <a th:href="@{/login}" class="link-auth">Entrar</a>
-        </p>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

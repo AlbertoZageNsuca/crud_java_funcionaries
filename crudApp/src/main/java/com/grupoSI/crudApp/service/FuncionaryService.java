@@ -13,12 +13,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+
 public class FuncionaryService {
 
     private final FuncionaryRepository funcionaryRepository;
     private final DepartamentRepository departamentRepository;
     private final UserRepository userRepository;
+
+    public FuncionaryService(FuncionaryRepository funcionaryRepository, DepartamentRepository departamentRepository, UserRepository userRepository) {
+        this.funcionaryRepository = funcionaryRepository;
+        this.departamentRepository = departamentRepository;
+        this.userRepository = userRepository;
+    }
+
+
 
     @Transactional
     public Funcionary save(Funcionary funcionary, Long departamentId, Long userId) {

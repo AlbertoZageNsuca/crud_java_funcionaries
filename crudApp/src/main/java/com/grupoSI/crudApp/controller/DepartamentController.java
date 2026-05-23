@@ -18,6 +18,7 @@ public class DepartamentController {
     private final DepartamentService departamentService;
 
 
+
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("departamentos", departamentService.findAll());

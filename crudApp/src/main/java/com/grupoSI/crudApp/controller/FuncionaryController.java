@@ -6,7 +6,6 @@ import com.grupoSI.crudApp.database.repository.DepartamentRepository;
 import com.grupoSI.crudApp.database.repository.UserRepository;
 import com.grupoSI.crudApp.service.FuncionaryService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,12 +16,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/funcionarios")
-@RequiredArgsConstructor
 public class FuncionaryController {
 
     private final FuncionaryService funcionaryService;
     private final DepartamentRepository departamentRepository;
     private final UserRepository userRepository;
+
+    // Mantido o teu construtor original intacto
+    public FuncionaryController(FuncionaryService funcionaryService, DepartamentRepository departamentRepository, UserRepository userRepository) {
+        this.funcionaryService = funcionaryService;
+        this.departamentRepository = departamentRepository;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping
     public String listarTodos(Model model) {
@@ -40,10 +45,15 @@ public class FuncionaryController {
                         Model model,
                         RedirectAttributes redirectAttributes) {
 
+        System.out.println(">>>>>> departamentId recebido: " + departamentId);
+        System.out.println(">>>>>> funcionary.name: " + funcionary.getName());
+
+        // 1. Validar departamento PRIMEIRO, antes do hasErrors()
         if (departamentId == null) {
             result.rejectValue("departament", "departament.obrigatorio", "Selecione um departamento.");
         }
 
+        // 2. SÓ AGORA verificar todos os erros juntos
         if (result.hasErrors()) {
             model.addAttribute("funcionarios", funcionaryService.findAll());
             model.addAttribute("departamentos", departamentRepository.findAll());
@@ -51,9 +61,10 @@ public class FuncionaryController {
             return "funcionarios/lista";
         }
 
+        // 3. Processar
         try {
             User user = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Usuário autenticado não encontrado."));
+                    .orElseThrow(() -> new RuntimeException("Utilizador autenticado não encontrado."));
             funcionaryService.save(funcionary, departamentId, user.getId());
             redirectAttributes.addFlashAttribute("sucesso", "Funcionário criado com sucesso!");
         } catch (IllegalArgumentException e) {
@@ -80,13 +91,9 @@ public class FuncionaryController {
     public String atualizar(@PathVariable Long id,
                             @Valid @ModelAttribute("funcionarioEdit") Funcionary novosDados,
                             BindingResult result,
-                            @RequestParam(required = false) Long departamentId,
+                            @RequestParam(name = "departamentId", required = true) Long departamentId, // Força o Spring a exigir o ID do HTML
                             Model model,
                             RedirectAttributes redirectAttributes) {
-
-        if (departamentId == null) {
-            result.rejectValue("departament", "departament.obrigatorio", "Selecione um departamento.");
-        }
 
         if (result.hasErrors()) {
             model.addAttribute("funcionarios", funcionaryService.findAll());

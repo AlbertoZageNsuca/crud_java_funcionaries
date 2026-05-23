@@ -221,15 +221,27 @@
                                    class="form-control" placeholder="0,00" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
                         </div>
+                        <!-- Substitui o bloco do select por isto: -->
                         <div class="col-12">
-                            <label class="form-label fw-semibold small">Departamento <span class="text-danger">*</span></label>
-                            <select name="departamentId"
-                                    th:classappend="${#fields.hasErrors('departament')} ? 'is-invalid'"
-                                    class="form-select" required>
+                            <label class="form-label fw-semibold small">
+                                Departamento <span class="text-danger">*</span>
+                            </label>
+
+                            <!-- Campo hidden que realmente envia o valor -->
+                            <input type="hidden" id="departamentIdHidden" name="departamentId" value="">
+
+                            <select id="departamentSelect"
+                                    class="form-select"
+                                    onchange="document.getElementById('departamentIdHidden').value = this.value">
                                 <option value="">— Selecione um departamento —</option>
-                                <option th:each="d : ${departamentos}" th:value="${d.id}" th:text="${d.name}">Depto</option>
+                                <option th:each="d : ${departamentos}"
+                                        th:value="${d.id}"
+                                        th:text="${d.name}">Depto</option>
                             </select>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('departament')}" th:errors="*{departament}"></div>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('departament')}"
+                                 th:errors="*{departament}">
+                            </div>
                         </div>
                     </div>
                 </div>

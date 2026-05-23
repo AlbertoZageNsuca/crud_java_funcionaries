@@ -17,7 +17,7 @@ import java.util.List;
 public class Departament {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotBlank(message = "O nome do departamento é obrigatório")
@@ -30,4 +30,28 @@ public class Departament {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Funcionary> funcionaryList = new ArrayList<>();
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Funcionary> getFuncionaryList() {
+        return funcionaryList;
+    }
+
+    public void setFuncionaryList(List<Funcionary> funcionaryList) {
+        this.funcionaryList = funcionaryList;
+    }
 }

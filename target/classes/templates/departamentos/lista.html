@@ -7,342 +7,177 @@
   <title>Departamentos — GrupoSI</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --navy:    #0f1f3d;
-      --navy-2:  #162844;
-      --blue:    #2563eb;
-      --blue-h:  #1d4ed8;
-      --ice:     #f8fafc;
-      --ice-blue:#f0f5ff;
-      --bg:      #f4f7fb;
-      --border:  #e2e8f0;
-      --muted:   #64748b;
-      --text:    #1e293b;
-    }
-    * { font-family: 'Sora', sans-serif; }
-    body { background: var(--bg); color: var(--text); min-height: 100vh; }
-
-    /* ── Navbar Superior Customizada (Substituindo Sidebar) ── */
-    .navbar-custom {
-      background-color: var(--navy);
-      padding: 0.85rem 1rem;
-      box-shadow: 0 4px 20px rgba(15, 31, 61, 0.1);
-    }
-    .navbar-custom .navbar-brand {
-      font-weight: 700;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .navbar-custom .nav-link {
-      color: #cbd5e1;
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 0.5rem 1rem !important;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-    .navbar-custom .nav-link:hover {
-      color: #fff;
-      background-color: rgba(255, 255, 255, 0.08);
-    }
-    .navbar-custom .nav-item.active .nav-link {
-      color: #fff;
-      background-color: var(--blue);
-      box-shadow: 0 4px 12px rgba(37,99,235,.25);
-    }
-    .navbar-custom .btn-logout {
-      color: #f87171;
-      font-weight: 600;
-      font-size: 0.85rem;
-      border: 1.5px solid rgba(248, 113, 113, 0.2);
-      border-radius: 8px;
-      padding: 0.4rem 1rem;
-      transition: all 0.2s;
-      background: transparent;
-    }
-    .navbar-custom .btn-logout:hover {
-      background: #f87171;
-      color: #fff;
-      border-color: #f87171;
-    }
-
-    /* ── Main Layout ── */
-    .main-container {
-      padding-top: 2.5rem;
-      padding-bottom: 2.5rem;
-    }
-
-    /* ── Cards e Tabelas ── */
-    .card-custom {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(15, 31, 61, 0.03);
-      overflow: hidden;
-    }
-    .card-header-bar {
-      background: #fafafa;
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 1.5rem;
-    }
-    .table-custom {
-      font-size: 0.9rem;
-    }
-    .table-custom thead th {
-      font-size: .72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
-      background: #f8fafc;
-      border-bottom: 2px solid var(--border);
-      padding: .85rem 1rem;
-    }
-    .table-custom tbody td {
-      vertical-align: middle;
-      padding: 0.95rem 1rem;
-      color: #334155;
-    }
-    .table-custom tbody tr:hover { background: #f8faff; }
-
-    /* ── Chips e Elementos de Ação ── */
-    .depto-chip {
-      width: 36px; height: 36px;
-      background: var(--ice-blue);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .badge-count {
-      background: var(--ice-blue);
-      color: var(--blue);
-      font-weight: 600;
-      font-size: .78rem;
-      border-radius: 20px;
-      padding: .25rem .75rem;
-      border: 1px solid rgba(37,99,235,0.08);
-    }
-    .btn-act {
-      width: 32px; height: 32px;
-      padding: 0;
-      border-radius: 8px;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: .8rem;
-      transition: all .15s;
-    }
-
-    /* ── Botões Globais ── */
-    .btn-primary {
-      background: var(--blue); border: none;
-      font-weight: 600; font-size: .875rem;
-      border-radius: 10px;
-      padding: 0.5rem 1.25rem;
-      box-shadow: 0 4px 14px rgba(37,99,235,.25);
-      transition: all 0.2s;
-    }
-    .btn-primary:hover { background: var(--blue-h); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,.35); }
-    .btn-primary:active { transform: translateY(0); }
-
-    /* ── Modais ── */
-    .modal-content { border: none; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
-    .modal-header { padding: 1.5rem 1.5rem 0.5rem; }
-    .modal-footer { padding: 0.5rem 1.5rem 1.5rem; }
-    .form-label { font-size: .8rem; font-weight: 600; color: #374151; margin-bottom: .35rem; }
-    .form-control {
-      font-size: .9rem;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 0.6rem 0.75rem;
-      background: #f8fafc;
-    }
-    .form-control:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-      background: #fff;
-    }
-
-    .empty-state { padding: 4rem 1rem; color: var(--muted); text-align: center; }
-    .empty-state i { font-size: 2.5rem; opacity: .4; display: block; margin-bottom: .75rem; color: var(--blue); }
-
-    .alert { font-size: .85rem; border-radius: 12px; border: none; }
-    .avatar-navbar {
-      width: 32px; height: 32px;
-      background: rgba(255,255,255,0.15);
-      color: #fff;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .85rem;
-    }
+    body { background: #f0f4f8; }
+    .sidebar { width: 240px; min-height: 100vh; background: #1e3a5f; position: fixed; top: 0; left: 0; z-index: 100; }
+    .sidebar .brand { padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .sidebar .nav-link { color: rgba(255,255,255,.75); padding: .6rem 1.25rem; border-radius: 8px;
+                          margin: .1rem .75rem; transition: all .2s; font-size: .9rem; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,.15); color: #fff; }
+    .main-content { margin-left: 240px; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 2rem; }
+    .page-body { padding: 2rem; }
+    .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+    .card-header { background: #fff; border-bottom: 1px solid #f1f5f9; border-radius: 12px 12px 0 0 !important; }
+    .table th { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+                 color: #64748b; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+    .table td { vertical-align: middle; font-size: .9rem; }
+    .btn-action { width: 32px; height: 32px; padding: 0; border-radius: 8px;
+                   display: inline-flex; align-items: center; justify-content: center; }
+    .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 .2rem rgba(37,99,235,.2); }
+    .btn-primary { background: #2563eb; border-color: #2563eb; }
+    .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    @media(max-width:768px) { .sidebar { display: none; } .main-content { margin-left: 0; } }
   </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-  <div class="container">
-    <a class="navbar-brand" th:href="@{/dashboard}">
-      <div class="bg-primary d-inline-flex p-2 rounded-3 text-white" style="box-shadow: 0 4px 12px rgba(37,99,235,.3);">
-        <i class="bi bi-building-fill-gear fs-6"></i>
+<div class="sidebar d-flex flex-column">
+  <div class="brand">
+    <div class="d-flex align-items-center gap-2">
+      <div style="width:36px;height:36px;background:#2563eb;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-building-fill-gear text-white"></i>
       </div>
-      <span class="ms-2">GrupoSI</span>
-    </a>
-
-    <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <i class="bi bi-list fs-2"></i>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-1">
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/dashboard}"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/funcionarios}"><i class="bi bi-people-fill me-2"></i>Funcionários</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" th:href="@{/departamentos}"><i class="bi bi-diagram-3-fill me-2"></i>Departamentos</a>
-        </li>
-      </ul>
-
-      <div class="d-flex align-items-center gap-3">
-        <div class="d-flex align-items-center gap-2 text-white">
-          <div class="avatar-navbar"><i class="bi bi-person-fill"></i></div>
-          <span class="text-white-50 small d-none d-sm-inline" sec:authentication="name">Usuário</span>
-        </div>
-        <form th:action="@{/logout}" method="post" class="m-0">
-          <button type="submit" class="btn-logout d-flex align-items-center gap-2">
-            <i class="bi bi-box-arrow-right"></i> Sair
-          </button>
-        </form>
-      </div>
+      <span class="text-white fw-bold fs-6">GrupoSI</span>
     </div>
   </div>
-</nav>
-
-<main class="container main-container">
-
-  <div class="row mb-4 align-items-center g-3">
-    <div class="col-12 col-sm-6">
-      <h4 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
-        <i class="bi bi-diagram-3-fill text-primary"></i> Departamentos
-      </h4>
-      <p class="text-muted small mb-0">Gerencie a estrutura organizacional da empresa.</p>
+  <nav class="flex-grow-1 pt-2">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/funcionarios}">
+          <i class="bi bi-people-fill me-2"></i>Funcionários
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" th:href="@{/departamentos}">
+          <i class="bi bi-diagram-3-fill me-2"></i>Departamentos
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="p-3 border-top" style="border-color: rgba(255,255,255,.1) !important;">
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <div style="width:36px;height:36px;background:#1d4ed8;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <i class="bi bi-person-fill text-info"></i>
+      </div>
+      <span class="text-white-50 small text-truncate" sec:authentication="name">Usuário</span>
     </div>
-    <div class="col-12 col-sm-6 text-sm-end">
-      <button class="btn btn-primary d-inline-flex align-items-center gap-2"
-              data-bs-toggle="modal" data-bs-target="#modalNovoDepartamento">
-        <i class="bi bi-plus-lg"></i> Novo Departamento
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn btn-sm w-100" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border:none;">
+        <i class="bi bi-box-arrow-right me-1"></i>Sair
       </button>
+    </form>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="topbar d-flex align-items-center justify-content-between">
+    <div>
+      <h5 class="mb-0 fw-bold text-dark">Departamentos</h5>
+      <small class="text-muted">Gerencie os departamentos da empresa</small>
+    </div>
+    <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalNovoDepartamento">
+      <i class="bi bi-plus-lg me-1"></i>Novo Departamento
+    </button>
+  </div>
+
+  <div class="page-body">
+    <div th:if="${sucesso}" class="alert alert-success alert-dismissible d-flex align-items-center gap-2 mb-3">
+      <i class="bi bi-check-circle-fill"></i>
+      <span th:text="${sucesso}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${erro}" class="alert alert-danger alert-dismissible d-flex align-items-center gap-2 mb-3">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span th:text="${erro}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card">
+      <div class="card-header d-flex align-items-center p-3">
+        <span class="fw-semibold text-dark">
+          <i class="bi bi-diagram-3 me-2 text-primary"></i>
+          Total: <span th:text="${#lists.size(departamentos)}" class="text-primary fw-bold">0</span> departamento(s)
+        </span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+            <tr>
+              <th class="ps-4">#</th>
+              <th>Nome do Departamento</th>
+              <th>Funcionários</th>
+              <th class="text-end pe-4">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(departamentos)}">
+              <td colspan="4" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                Nenhum departamento cadastrado ainda.
+              </td>
+            </tr>
+            <tr th:each="d, i : ${departamentos}">
+              <td class="ps-4 text-muted" th:text="${i.count}">1</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div style="width:34px;height:34px;background:#eff6ff;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-diagram-3 text-primary" style="font-size:.85rem;"></i>
+                  </div>
+                  <span class="fw-semibold" th:text="${d.name}">Nome</span>
+                </div>
+              </td>
+              <td>
+                  <span class="badge bg-light text-secondary rounded-pill px-2"
+                        th:text="${#lists.size(d.funcionaryList)} + ' funcionário(s)'">0</span>
+              </td>
+              <td class="text-end pe-4">
+                <a th:href="@{/departamentos/{id}/editar(id=${d.id})}"
+                   class="btn btn-action btn-outline-primary me-1" title="Editar">
+                  <i class="bi bi-pencil-fill" style="font-size:.75rem;"></i>
+                </a>
+                <form th:action="@{/departamentos/{id}/excluir(id=${d.id})}" method="post" class="d-inline"
+                      onsubmit="return confirm('Confirma a exclusão deste departamento?')">
+                  <button type="submit" class="btn btn-action btn-outline-danger" title="Excluir">
+                    <i class="bi bi-trash-fill" style="font-size:.75rem;"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
+</div>
 
-  <div th:if="${sucesso}" class="alert alert-success alert-dismissible bg-success-subtle text-success d-flex align-items-center gap-2 mb-4">
-    <i class="bi bi-check-circle-fill flex-shrink-0"></i>
-    <span th:text="${sucesso}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  <div th:if="${erro}" class="alert alert-danger alert-dismissible bg-danger-subtle text-danger d-flex align-items-center gap-2 mb-4">
-    <i class="bi bi-x-circle-fill flex-shrink-0"></i>
-    <span th:text="${erro}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-
-  <div class="card card-custom">
-    <div class="card-header-bar d-flex align-items-center justify-content-between">
-      <span class="fw-semibold text-dark d-flex align-items-center gap-2" style="font-size:.88rem;">
-        <i class="bi bi-layers text-muted"></i> Listagem Geral
-      </span>
-      <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3"
-            th:text="${#lists.size(departamentos)}+' cadastrado(s)'">0 cadastrado(s)</span>
-    </div>
-
-    <div class="table-responsive">
-      <table class="table table-custom table-hover mb-0">
-        <thead>
-        <tr>
-          <th class="ps-4" style="width: 70px;">#</th>
-          <th>Nome do Departamento</th>
-          <th>Membros Vinculados</th>
-          <th class="text-end pe-4" style="width: 140px;">Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:if="${#lists.isEmpty(departamentos)}">
-          <td colspan="4">
-            <div class="empty-state">
-              <i class="bi bi-folder-x"></i>
-              <h6 class="fw-bold text-dark mb-1">Nenhum departamento encontrado</h6>
-              <p class="small text-muted mb-0">Comece criando um novo através do botão acima.</p>
-            </div>
-          </td>
-        </tr>
-        <tr th:each="d, i : ${departamentos}">
-          <td class="ps-4 text-muted small fw-semibold" th:text="${i.count}">1</td>
-          <td>
-            <div class="d-flex align-items-center gap-3">
-              <div class="depto-chip">
-                <i class="bi bi-diagram-3 text-primary" style="font-size:.95rem;"></i>
-              </div>
-              <span class="fw-semibold text-dark" th:text="${d.name}">Nome</span>
-            </div>
-          </td>
-          <td>
-              <span class="badge-count">
-                <i class="bi bi-people small me-1"></i>
-                <span th:text="${#lists.size(d.funcionaryList)}">0</span>
-              </span>
-          </td>
-          <td class="text-end pe-4">
-            <a th:href="@{/departamentos/{id}/editar(id=${d.id})}"
-               class="btn btn-act btn-outline-primary me-1" title="Editar">
-              <i class="bi bi-pencil-fill"></i>
-            </a>
-            <form th:action="@{/departamentos/{id}/excluir(id=${d.id})}" method="post" class="d-inline"
-                  onsubmit="return confirm('Tem certeza que deseja excluir este departamento?')">
-              <button type="submit" class="btn btn-act btn-outline-danger" title="Excluir">
-                <i class="bi bi-trash3-fill"></i>
-              </button>
-            </form>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</main>
-
+<!-- Modal Novo Departamento -->
 <div class="modal fade" id="modalNovoDepartamento" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h6 class="modal-title fw-bold d-flex align-items-center gap-2 text-dark">
-          <i class="bi bi-plus-circle-fill text-primary"></i>Novo Departamento
-        </h6>
+  <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+    <div class="modal-content" style="border-radius:16px;border:none;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-diagram-3-fill text-primary me-2"></i>Novo Departamento
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form th:action="@{/departamentos/novo}" th:object="${novoDepartamento}" method="post" novalidate>
-        <div class="modal-body">
-          <div class="mb-2">
-            <label class="form-label">
-              <i class="bi bi-type me-1"></i>Nome do departamento <span class="text-danger">*</span>
-            </label>
+        <div class="modal-body px-4 py-3">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Nome do Departamento <span class="text-danger">*</span></label>
             <input type="text" th:field="*{name}"
                    th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
                    class="form-control" placeholder="Ex: Tecnologia da Informação"
                    minlength="2" maxlength="100" required/>
-            <div class="invalid-feedback fw-semibold mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
           </div>
         </div>
-        <div class="modal-footer border-0 d-flex gap-2">
-          <button type="button" class="btn btn-light flex-fill fw-semibold py-2" style="border-radius:10px;" data-bs-dismiss="modal">
-            Cancelar
-          </button>
-          <button type="submit" class="btn btn-primary flex-fill py-2">
-            <i class="bi bi-floppy-fill me-1"></i>Salvar
+        <div class="modal-footer border-0 pt-0 px-4">
+          <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-floppy-fill me-2"></i>Salvar
           </button>
         </div>
       </form>
@@ -350,35 +185,32 @@
   </div>
 </div>
 
+<!-- Modal Editar Departamento -->
 <div class="modal fade" id="modalEditarDepartamento" tabindex="-1" aria-hidden="true"
      th:if="${departamentoEdit != null}">
-  <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h6 class="modal-title fw-bold d-flex align-items-center gap-2 text-dark">
-          <i class="bi bi-pencil-square text-primary"></i>Editar Departamento
-        </h6>
+  <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+    <div class="modal-content" style="border-radius:16px;border:none;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-pencil-fill text-primary me-2"></i>Editar Departamento
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form th:action="@{/departamentos/{id}/editar(id=${departamentoEdit.id})}"
             th:object="${departamentoEdit}" method="post" novalidate>
-        <div class="modal-body">
-          <div class="mb-2">
-            <label class="form-label">
-              <i class="bi bi-type me-1"></i>Nome do departamento <span class="text-danger">*</span>
-            </label>
+        <div class="modal-body px-4 py-3">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Nome do Departamento <span class="text-danger">*</span></label>
             <input type="text" th:field="*{name}"
                    th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
                    class="form-control" minlength="2" maxlength="100" required/>
-            <div class="invalid-feedback fw-semibold mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
           </div>
         </div>
-        <div class="modal-footer border-0 d-flex gap-2">
-          <a th:href="@{/departamentos}" class="btn btn-light flex-fill fw-semibold py-2" style="border-radius:10px; text-decoration:none; text-align:center; color:#334155; background:#f1f5f9;">
-            Cancelar
-          </a>
-          <button type="submit" class="btn btn-primary flex-fill py-2">
-            <i class="bi bi-floppy-fill me-1"></i>Atualizar
+        <div class="modal-footer border-0 pt-0 px-4">
+          <a th:href="@{/departamentos}" class="btn btn-light px-4">Cancelar</a>
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-floppy-fill me-2"></i>Atualizar
           </button>
         </div>
       </form>
@@ -389,10 +221,13 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  const abrirModalNovo   = /*[[${abrirModalNovo}]]*/   false;
+  const abrirModalNovo = /*[[${abrirModalNovo}]]*/ false;
   const abrirModalEditar = /*[[${abrirModalEditar}]]*/ null;
+
   document.addEventListener('DOMContentLoaded', function () {
-    if (abrirModalNovo) new bootstrap.Modal(document.getElementById('modalNovoDepartamento')).show();
+    if (abrirModalNovo) {
+      new bootstrap.Modal(document.getElementById('modalNovoDepartamento')).show();
+    }
     if (abrirModalEditar) {
       const el = document.getElementById('modalEditarDepartamento');
       if (el) new bootstrap.Modal(el).show();
