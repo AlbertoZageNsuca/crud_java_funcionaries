@@ -140,7 +140,7 @@
                             <td>
                                 <span class="badge badge-depto rounded-pill px-2 py-1" th:text="${f.departament?.name ?: '—'}">Depto</span>
                             </td>
-                            <td th:text="'R$ ' + ${#numbers.formatDecimal(f.salary, 1, 2)}"></td>
+                            <td th:text="'(Kz)  ' + ${#numbers.formatDecimal(f.salary, 1, 2)}"></td>
                             <td th:text="${f.birthDate != null ? #temporals.format(f.birthDate, 'dd/MM/yyyy') : '—'}">Data</td>
                             <td class="text-end pe-4">
                                 <a th:href="@{/funcionarios/{id}/editar(id=${f.id})}"
@@ -218,7 +218,7 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Salário (R$) <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Salário (Kz) <span class="text-danger">*</span></label>
                             <input type="number" step="0.01" min="0.01" th:field="*{salary}"
                                    th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
                                    class="form-control" placeholder="0,00" required/>
@@ -301,7 +301,7 @@
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Salário (R$) <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold small">Salário (Kz)  <span class="text-danger">*</span></label>
                             <input type="number" step="0.01" min="0.01" th:field="*{salary}"
                                    th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
                                    class="form-control" required/>

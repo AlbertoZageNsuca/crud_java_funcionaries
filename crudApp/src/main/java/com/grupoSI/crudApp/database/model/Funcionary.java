@@ -46,7 +46,7 @@ public class Funcionary {
 
     @Column(nullable = false)
     @NotNull(message = "O salário é obrigatório")
-    @DecimalMin(value = "0.01", message = "O salário deve ser maior que zero")
+    @DecimalMin(value = "100000.00", message = "O salário mínimo é de 100.000 Kz")
     private Double salary;
 
     @ManyToOne(fetch = FetchType.LAZY)
