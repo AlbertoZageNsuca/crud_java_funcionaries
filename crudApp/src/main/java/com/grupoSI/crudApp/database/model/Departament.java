@@ -2,9 +2,7 @@ package com.grupoSI.crudApp.database.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +23,8 @@ public class Departament {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "departament",
             cascade = CascadeType.ALL,
             orphanRemoval = true,

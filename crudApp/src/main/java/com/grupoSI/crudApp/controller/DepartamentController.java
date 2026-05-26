@@ -23,6 +23,9 @@ public class DepartamentController {
     public String listar(Model model) {
         model.addAttribute("departamentos", departamentService.findAll());
         model.addAttribute("novoDepartamento", new Departament());
+        model.addAttribute("departamentoEdit", new Departament());
+        model.addAttribute("abrirModalNovo", false);
+        model.addAttribute("abrirModalEditar", false);
         return "departamentos/lista";
     }
 

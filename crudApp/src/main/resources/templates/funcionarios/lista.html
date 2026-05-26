@@ -8,238 +8,512 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <style>
-        body { background: #f0f4f8; }
-        .sidebar { width: 240px; min-height: 100vh; background: #1e3a5f; position: fixed; top: 0; left: 0; z-index: 100; }
-        .sidebar .brand { padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,.1); }
-        .sidebar .nav-link { color: rgba(255,255,255,.75); padding: .6rem 1.25rem; border-radius: 8px; margin: .1rem .75rem;
-                              transition: all .2s; font-size: .9rem; }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,.15); color: #fff; }
-        .sidebar .nav-link i { width: 20px; }
-        .main-content { margin-left: 240px; }
-        .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 2rem; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f1f5f9; }
+        .sidebar {
+            width: 260px; min-height: 100vh;
+            background: linear-gradient(160deg, #0f2544 0%, #1e3a5f 60%, #1a4480 100%);
+            position: fixed; top: 0; left: 0; z-index: 100;
+            display: flex; flex-direction: column;
+            box-shadow: 4px 0 24px rgba(0,0,0,.18);
+        }
+        .sidebar .brand { padding: 1.6rem 1.4rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,.08); }
+        .sidebar .brand-icon {
+            width: 42px; height: 42px; background: #2563eb;
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(37,99,235,.4);
+        }
+        .sidebar-section {
+            padding: .5rem 1rem .25rem;
+            font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+            color: rgba(255,255,255,.3); text-transform: uppercase;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,.65); padding: .6rem 1rem; border-radius: 10px;
+            margin: .1rem .75rem; transition: all .2s; font-size: .875rem; font-weight: 500;
+            display: flex; align-items: center; gap: .6rem;
+        }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .sidebar .nav-link.active {
+            background: linear-gradient(90deg, rgba(37,99,235,.5), rgba(37,99,235,.2));
+            color: #fff; box-shadow: inset 3px 0 0 #60a5fa;
+        }
+        .sidebar .nav-link .icon-wrap {
+            width: 28px; height: 28px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,.08); font-size: .8rem; flex-shrink: 0;
+        }
+        .sidebar .nav-link.active .icon-wrap { background: rgba(37,99,235,.5); }
+        .sidebar-footer { padding: 1rem 1.2rem; border-top: 1px solid rgba(255,255,255,.08); margin-top: auto; }
+        .user-chip {
+            background: rgba(255,255,255,.07); border-radius: 12px;
+            padding: .6rem .8rem; display: flex; align-items: center; gap: .65rem;
+        }
+        .user-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: .8rem; flex-shrink: 0;
+        }
+        .main-content { margin-left: 260px; }
+        .topbar {
+            background: #fff; border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 90; box-shadow: 0 1px 8px rgba(0,0,0,.04);
+        }
         .page-body { padding: 2rem; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
-        .card-header { background: #fff; border-bottom: 1px solid #f1f5f9; border-radius: 12px 12px 0 0 !important; }
-        .table th { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
-                     color: #64748b; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
-        .table td { vertical-align: middle; font-size: .9rem; }
-        .badge-depto { background: #eff6ff; color: #2563eb; font-weight: 600; font-size: .75rem; }
-        .btn-action { width: 32px; height: 32px; padding: 0; border-radius: 8px; display: inline-flex;
-                       align-items: center; justify-content: center; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #dbeafe;
-                   display: flex; align-items: center; justify-content: center; color: #2563eb; font-weight: 700; font-size: .85rem; }
-        .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 .2rem rgba(37,99,235,.2); }
-        .btn-primary { background: #2563eb; border-color: #2563eb; }
+        .stat-card {
+            background: #fff; border-radius: 16px; border: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,.05);
+            padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.09); }
+        .stat-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; flex-shrink: 0;
+        }
+        .table-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.05); overflow: hidden; }
+        .table-card-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+        .table th {
+            font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+            color: #94a3b8; background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: .85rem 1rem;
+        }
+        .table td { vertical-align: middle; padding: .85rem 1rem; font-size: .88rem; }
+        .table tbody tr { border-bottom: 1px solid #f8fafc; transition: background .15s; }
+        .table tbody tr:hover { background: #f8fafc; }
+        .table tbody tr:last-child { border-bottom: none; }
+        .avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            display: flex; align-items: center; justify-content: center;
+            color: #1d4ed8; font-weight: 700; font-size: .85rem; flex-shrink: 0;
+            overflow: hidden;
+        }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-depto { background: #eff6ff; color: #2563eb; font-weight: 600; font-size: .72rem; padding: .3rem .7rem; border-radius: 20px; }
+        .badge-salary { background: #f0fdf4; color: #16a34a; font-weight: 600; font-size: .78rem; }
+        .btn-action {
+            width: 32px; height: 32px; padding: 0; border-radius: 8px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: .75rem; transition: all .15s;
+        }
+        .modal-content { border: none; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,.18); }
+        .modal-header { padding: 1.5rem 1.75rem 1rem; border-bottom: none; }
+        .modal-body { padding: 0 1.75rem 1rem; }
+        .modal-footer { padding: .75rem 1.75rem 1.5rem; border-top: none; }
+        .modal-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+        }
+        .form-label { font-size: .8rem; font-weight: 600; color: #374151; margin-bottom: .35rem; }
+        .form-control, .form-select {
+            border-radius: 10px; border: 1.5px solid #e5e7eb;
+            padding: .55rem .85rem; font-size: .88rem; transition: border-color .2s, box-shadow .2s;
+        }
+        .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+        .form-control.is-invalid, .form-select.is-invalid { border-color: #ef4444; }
+        .form-divider {
+            font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #9ca3af;
+            display: flex; align-items: center; gap: .6rem; margin: .25rem 0;
+        }
+        .form-divider::before, .form-divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+        .view-header-bg {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            border-radius: 20px 20px 0 0; padding: 2rem 1.75rem 4rem; position: relative;
+        }
+        .view-photo-wrap { position: absolute; left: 50%; bottom: -48px; transform: translateX(-50%); }
+        .view-photo {
+            width: 96px; height: 96px; border-radius: 50%;
+            border: 4px solid #fff; object-fit: cover;
+            box-shadow: 0 8px 24px rgba(0,0,0,.2);
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            display: flex; align-items: center; justify-content: center;
+            color: #1d4ed8; font-weight: 800; font-size: 2rem; overflow: hidden;
+        }
+        .view-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .view-body { padding: 4rem 1.75rem 1.5rem; }
+        .view-name { font-size: 1.25rem; font-weight: 700; text-align: center; color: #0f172a; }
+        .view-role { text-align: center; color: #64748b; font-size: .875rem; margin-top: .2rem; }
+        .view-badges { display: flex; justify-content: center; gap: .5rem; margin-top: .75rem; flex-wrap: wrap; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: 1.5rem; }
+        .info-item { background: #f8fafc; border-radius: 12px; padding: .85rem 1rem; border: 1px solid #e2e8f0; }
+        .info-item .info-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #94a3b8; margin-bottom: .25rem; }
+        .info-item .info-value { font-size: .88rem; font-weight: 600; color: #0f172a; word-break: break-word; }
+        .info-item.full { grid-column: 1 / -1; }
+        .photo-upload-wrap { position: relative; width: 90px; height: 90px; cursor: pointer; }
+        .photo-upload-wrap img, .photo-preview-circle {
+            width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2.5px solid #e2e8f0;
+        }
+        .photo-preview-circle {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            display: flex; align-items: center; justify-content: center;
+            color: #2563eb; font-size: 2rem; font-weight: 700;
+        }
+        .photo-upload-btn {
+            position: absolute; bottom: 2px; right: 2px;
+            width: 26px; height: 26px; border-radius: 50%;
+            background: #2563eb; color: #fff; border: 2px solid #fff;
+            display: flex; align-items: center; justify-content: center; font-size: .65rem;
+        }
+        .btn-primary { background: #2563eb; border-color: #2563eb; border-radius: 10px; font-weight: 600; }
         .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
-        @media(max-width:768px) { .sidebar { display: none; } .main-content { margin-left: 0; } }
+        .btn-light { border-radius: 10px; font-weight: 500; border: 1.5px solid #e5e7eb; }
+        .btn-export {
+            background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; border: none;
+            border-radius: 10px; font-weight: 600; box-shadow: 0 2px 8px rgba(220,38,38,.3); transition: all .2s;
+        }
+        .btn-export:hover { background: linear-gradient(135deg, #b91c1c, #dc2626); color: #fff; transform: translateY(-1px); }
+        .alert { border: none; border-radius: 12px; font-size: .88rem; }
+        .alert-success { background: #f0fdf4; color: #15803d; }
+        .alert-danger { background: #fef2f2; color: #dc2626; }
+        .empty-state { padding: 4rem 2rem; }
+        .empty-icon {
+            width: 72px; height: 72px; border-radius: 20px; background: #f1f5f9;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: #94a3b8; margin: 0 auto 1rem;
+        }
+        @media(max-width:768px) { .sidebar { display: none; } .main-content { margin-left: 0; } .info-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="sidebar d-flex flex-column">
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<div class="sidebar">
     <div class="brand">
         <div class="d-flex align-items-center gap-2">
-            <div style="width:36px;height:36px;background:#2563eb;border-radius:10px;display:flex;align-items:center;justify-content:center;">
-                <i class="bi bi-building-fill-gear text-white"></i>
+            <div class="brand-icon"><i class="bi bi-building-fill-gear text-white fs-5"></i></div>
+            <div>
+                <div class="text-white fw-bold" style="font-size:.95rem;line-height:1.2">GrupoSI</div>
+                <div style="font-size:.7rem;color:rgba(255,255,255,.4)">Gestão de Pessoal</div>
             </div>
-            <span class="text-white fw-bold fs-6">GrupoSI</span>
         </div>
     </div>
-    <nav class="flex-grow-1 pt-2">
-        <ul class="nav flex-column">
+    <nav class="flex-grow-1 pt-3">
+        <div class="sidebar-section">Menu</div>
+        <ul class="nav flex-column px-1 mt-1">
             <li class="nav-item">
                 <a class="nav-link active" th:href="@{/funcionarios}">
-                    <i class="bi bi-people-fill me-2"></i>Funcionários
+                    <span class="icon-wrap"><i class="bi bi-people-fill"></i></span>Funcionários
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/departamentos}">
-                    <i class="bi bi-diagram-3-fill me-2"></i>Departamentos
+                    <span class="icon-wrap"><i class="bi bi-diagram-3-fill"></i></span>Departamentos
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-section mt-3">Outros</div>
+        <ul class="nav flex-column px-1 mt-1">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/funcionarios/lixeira}">
+                    <span class="icon-wrap" style="background:rgba(220,38,38,.2);color:#f87171;">
+                        <i class="bi bi-trash3-fill"></i>
+                    </span>Lixeira
                 </a>
             </li>
         </ul>
     </nav>
-    <div class="p-3 border-top" style="border-color: rgba(255,255,255,.1) !important;">
-        <div class="d-flex align-items-center gap-2 mb-2">
-            <div class="avatar" style="background:#1d4ed8;color:#93c5fd;">
-                <i class="bi bi-person-fill"></i>
+    <div class="sidebar-footer">
+        <div class="user-chip mb-2">
+            <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
+            <div style="min-width:0">
+                <div class="text-white fw-semibold small text-truncate" sec:authentication="name">Utilizador</div>
+                <div style="font-size:.68rem;color:rgba(255,255,255,.4)">Administrador</div>
             </div>
-            <span class="text-white-50 small text-truncate" sec:authentication="name">Usuário</span>
         </div>
         <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-sm w-100" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);border:none;">
+            <button type="submit" class="btn btn-sm w-100 mt-1"
+                    style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.1);border-radius:10px;">
                 <i class="bi bi-box-arrow-right me-1"></i>Sair
             </button>
         </form>
     </div>
 </div>
 
+<!-- ═══════════════ MAIN ═══════════════ -->
 <div class="main-content">
-    <div class="topbar d-flex align-items-center justify-content-between">
+    <div class="topbar">
         <div>
-            <h5 class="mb-0 fw-bold text-dark">Funcionários</h5>
-            <small class="text-muted">Gerencie os funcionários cadastrados</small>
+            <h5 class="mb-0 fw-bold text-dark" style="font-size:1rem;">Funcionários</h5>
+            <small class="text-muted" style="font-size:.78rem;">Gerencie os funcionários cadastrados</small>
         </div>
-        <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalNovoFuncionario">
-            <i class="bi bi-plus-lg me-1"></i>Novo Funcionário
-        </button>
-        <a href="/funcionarios/pdf" class="btn btn-danger">
-            Exportar PDF
-        </a>
+        <div class="d-flex gap-2">
+            <a href="/funcionarios/pdf" class="btn btn-export btn-sm px-3">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Exportar PDF
+            </a>
+            <button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalNovoFuncionario">
+                <i class="bi bi-plus-lg me-1"></i>Novo Funcionário
+            </button>
+        </div>
     </div>
 
     <div class="page-body">
         <div th:if="${sucesso}" class="alert alert-success alert-dismissible d-flex align-items-center gap-2 mb-3" role="alert">
-            <i class="bi bi-check-circle-fill"></i>
-            <span th:text="${sucesso}"></span>
+            <i class="bi bi-check-circle-fill"></i><span th:text="${sucesso}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <div th:if="${erro}" class="alert alert-danger alert-dismissible d-flex align-items-center gap-2 mb-3" role="alert">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-            <span th:text="${erro}"></span>
+            <i class="bi bi-exclamation-triangle-fill"></i><span th:text="${erro}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
-        <div class="card">
-            <div class="card-header d-flex align-items-center justify-content-between p-3">
-        <span class="fw-semibold text-dark">
-          <i class="bi bi-people me-2 text-primary"></i>
-          Total: <span th:text="${#lists.size(funcionarios)}" class="text-primary fw-bold">0</span> funcionário(s)
-        </span>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
-                        <tr>
-                            <th class="ps-4">Funcionário</th>
-                            <th>E-mail</th>
-                            <th>Ocupação</th>
-                            <th>Departamento</th>
-                            <th>Salário</th>
-                            <th>Nascimento</th>
-                            <th class="text-end pe-4">Ações</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:if="${#lists.isEmpty(funcionarios)}">
-                            <td colspan="7" class="text-center py-5 text-muted">
-                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                                Nenhum funcionário cadastrado ainda.
-                            </td>
-                        </tr>
-                        <tr th:each="f : ${funcionarios}">
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="avatar" th:text="${#strings.substring(f.name, 0, 1).toUpperCase()}">A</div>
-                                    <span class="fw-semibold" th:text="${f.name}">Nome</span>
-                                </div>
-                            </td>
-                            <td class="text-muted" th:text="${f.email}">email</td>
-                            <td th:text="${f.ocupation ?: '—'}">Ocupação</td>
-                            <td>
-                                <span class="badge badge-depto rounded-pill px-2 py-1" th:text="${f.departament?.name ?: '—'}">Depto</span>
-                            </td>
-                            <td th:text="'(Kz)  ' + ${#numbers.formatDecimal(f.salary, 1, 2)}"></td>
-                            <td th:text="${f.birthDate != null ? #temporals.format(f.birthDate, 'dd/MM/yyyy') : '—'}">Data</td>
-                            <td class="text-end pe-4">
-                                <a th:href="@{/funcionarios/{id}/editar(id=${f.id})}"
-                                   class="btn btn-action btn-outline-primary me-1" title="Editar">
-                                    <i class="bi bi-pencil-fill" style="font-size:.75rem;"></i>
-                                </a>
-                                <form th:action="@{/funcionarios/{id}/eliminar(id=${f.id})}" method="post" class="d-inline"
-                                      onsubmit="return confirm('Confirma a remoção deste funcionário?')">
-                                    <button type="submit" class="btn btn-action btn-outline-danger" title="Remover">
-                                        <i class="bi bi-trash-fill" style="font-size:.75rem;"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+        <!-- Stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#eff6ff;color:#2563eb;"><i class="bi bi-people-fill"></i></div>
+                    <div>
+                        <div class="fw-bold fs-4 lh-1" th:text="${#lists.size(funcionarios)}">0</div>
+                        <div class="text-muted small mt-1">Funcionários Activos</div>
+                    </div>
                 </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="bi bi-cash-stack"></i></div>
+                    <div>
+                        <div class="fw-bold fs-4 lh-1" th:text="'Kz ' + ${#numbers.formatDecimal(massaSalarial, 1, 0)}">0</div>
+                        <div class="text-muted small mt-1">Massa Salarial</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#fdf4ff;color:#9333ea;"><i class="bi bi-diagram-3-fill"></i></div>
+                    <div>
+                        <div class="fw-bold fs-4 lh-1" th:text="${totalDepartamentos}">0</div>
+                        <div class="text-muted small mt-1">Departamentos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-table text-primary"></i>
+                    <span class="fw-semibold text-dark" style="font-size:.9rem;">Lista de Funcionários</span>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                    <tr>
+                        <th class="ps-4">Funcionário</th>
+                        <th>E-mail</th>
+                        <th>Ocupação</th>
+                        <th>Departamento</th>
+                        <th>Salário</th>
+                        <th>Nascimento</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(funcionarios)}">
+                        <td colspan="7">
+                            <div class="empty-state text-center">
+                                <div class="empty-icon"><i class="bi bi-people"></i></div>
+                                <div class="fw-semibold text-dark mb-1">Nenhum funcionário cadastrado</div>
+                                <div class="text-muted small">Clique em "Novo Funcionário" para começar.</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:each="f : ${funcionarios}">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar">
+                                    <img th:if="${f.photoUrl != null and !f.photoUrl.isEmpty()}" th:src="${f.photoUrl}" alt="foto"/>
+                                    <span th:unless="${f.photoUrl != null and !f.photoUrl.isEmpty()}"
+                                          th:text="${f.name != null and !#strings.isEmpty(f.name) ? #strings.substring(f.name,0,1).toUpperCase() : '?'}">A</span>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-dark" th:text="${f.name ?: '—'}">Nome</div>
+                                    <div class="text-muted" style="font-size:.75rem;" th:text="${f.localization ?: ''}"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-muted" th:text="${f.email ?: '—'}">email</td>
+                        <td th:text="${f.ocupation ?: '—'}">Ocupação</td>
+                        <td><span class="badge badge-depto" th:text="${f.departament?.name ?: '—'}">Depto</span></td>
+                        <td><span class="badge badge-salary rounded-pill px-2 py-1" th:text="'Kz ' + ${#numbers.formatDecimal(f.salary, 1, 0)}"></span></td>
+                        <td class="text-muted" th:text="${f.birthDate != null ? #temporals.format(f.birthDate, 'dd/MM/yyyy') : '—'}">Data</td>
+                        <td class="text-end pe-4">
+                            <!-- VIEW -->
+                            <button type="button"
+                                    class="btn btn-action btn-outline-info me-1" title="Ver"
+                                    th:data-id="${f.id}"
+                                    th:data-nome="${f.name ?: ''}"
+                                    th:data-email="${f.email ?: ''}"
+                                    th:data-ocupacao="${f.ocupation ?: '—'}"
+                                    th:data-depto="${f.departament?.name ?: '—'}"
+                                    th:data-salario="${f.salary}"
+                                    th:data-nascimento="${f.birthDate != null ? #temporals.format(f.birthDate, 'dd/MM/yyyy') : '—'}"
+                                    th:data-telefone="${f.phoneNumber ?: '—'}"
+                                    th:data-localizacao="${f.localization ?: '—'}"
+                                    th:data-photo="${f.photoUrl ?: ''}"
+                                    onclick="abrirViewFromBtn(this)">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                            <!-- EDITAR -->
+                            <a th:href="@{/funcionarios/{id}/editar(id=${f.id})}"
+                               class="btn btn-action btn-outline-primary me-1" title="Editar">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <!-- ELIMINAR -->
+                            <form th:action="@{/funcionarios/{id}/eliminar(id=${f.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Confirma a remoção deste funcionário?')">
+                                <button type="submit" class="btn btn-action btn-outline-danger" title="Remover">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Novo Funcionário -->
-<div class="modal fade" id="modalNovoFuncionario" tabindex="-1" aria-labelledby="modalNovoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content" style="border-radius:16px;border:none;">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="modalNovoLabel">
-                    <i class="bi bi-person-plus-fill text-primary me-2"></i>Novo Funcionário
-                </h5>
+<!-- ═══════════════ MODAL VER FUNCIONÁRIO ═══════════════ -->
+<div class="modal fade" id="modalVerFuncionario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+        <div class="modal-content" style="border-radius:20px;overflow:hidden;">
+            <div class="view-header-bg">
+                <button type="button" class="btn-close btn-close-white float-end" data-bs-dismiss="modal"></button>
+                <div class="view-photo-wrap">
+                    <div class="view-photo" id="viewPhoto">
+                        <img id="viewPhotoImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+                        <span id="viewPhotoInitial">?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="view-body">
+                <div class="view-name" id="viewName">—</div>
+                <div class="view-role" id="viewRole">—</div>
+                <div class="view-badges">
+                    <span class="badge badge-depto" id="viewDepto">—</span>
+                    <span class="badge badge-salary rounded-pill px-2 py-1" id="viewSalario">—</span>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label"><i class="bi bi-envelope me-1"></i>E-mail</div>
+                        <div class="info-value" id="viewEmail">—</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="bi bi-telephone me-1"></i>Telefone</div>
+                        <div class="info-value" id="viewTelefone">—</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="bi bi-cake2 me-1"></i>Nascimento</div>
+                        <div class="info-value" id="viewNascimento">—</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="bi bi-geo-alt me-1"></i>Localização</div>
+                        <div class="info-value" id="viewLocalizacao">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding:.75rem 1.75rem 1.5rem;border-top:none;">
+                <button type="button" class="btn btn-light px-4 w-100" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ MODAL NOVO ═══════════════ -->
+<div class="modal fade" id="modalNovoFuncionario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-icon" style="background:#eff6ff;color:#2563eb;"><i class="bi bi-person-plus-fill"></i></div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">Novo Funcionário</h5>
+                        <small class="text-muted">Preencha os dados do novo colaborador</small>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form th:action="@{/funcionarios/novo}" th:object="${novoFuncionario}" method="post" novalidate>
-                <div class="modal-body px-4 py-3">
+            <form th:action="@{/funcionarios/novo}" th:object="${novoFuncionario}" method="post"
+                  enctype="multipart/form-data" novalidate>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center mb-3">
+                        <label for="novoFotoInput" style="cursor:pointer;">
+                            <div class="photo-upload-wrap">
+                                <div class="photo-preview-circle" id="novoPreviewCircle">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <img id="novoPreviewImg" src="" alt="" style="display:none;position:absolute;top:0;left:0;width:90px;height:90px;border-radius:50%;object-fit:cover;border:2.5px solid #e2e8f0;"/>
+                                <div class="photo-upload-btn"><i class="bi bi-camera-fill"></i></div>
+                            </div>
+                        </label>
+                        <input type="file" id="novoFotoInput" name="foto" accept="image/*" class="d-none"
+                               onchange="previewFoto(this, 'novoPreviewImg', 'novoPreviewCircle')"/>
+                    </div>
+                    <div class="form-divider mb-3">Informações Pessoais</div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Nome <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{name}"
-                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
-                                   class="form-control" placeholder="Nome completo" minlength="3" maxlength="100" required/>
+                            <label class="form-label">Nome completo <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                                   class="form-control" placeholder="Ex: João Silva" minlength="3" maxlength="100" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">E-mail <span class="text-danger">*</span></label>
-                            <input type="email" th:field="*{email}"
-                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
-                                   class="form-control" placeholder="funcionario@empresa.com" required/>
+                            <label class="form-label">E-mail <span class="text-danger">*</span></label>
+                            <input type="email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                   class="form-control" placeholder="joao@empresa.com" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Ocupação</label>
-                            <input type="text" th:field="*{ocupation}"
-                                   th:classappend="${#fields.hasErrors('ocupation')} ? 'is-invalid'"
-                                   class="form-control" placeholder="Ex: Analista de Sistemas" maxlength="100"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('ocupation')}" th:errors="*{ocupation}"></div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Localização</label>
-                            <input type="text" th:field="*{localization}"
-                                   class="form-control" placeholder="Ex: São Paulo, SP" maxlength="150"/>
+                        <div class="col-md-4">
+                            <label class="form-label">Telefone</label>
+                            <input type="text" th:field="*{phoneNumber}" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
+                                   class="form-control" placeholder="923000000" pattern="[0-9]{8,15}"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Data de Nascimento <span class="text-danger">*</span></label>
-                            <input type="date" th:field="*{birthDate}"
-                                   th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'"
+                            <label class="form-label">Data de Nascimento <span class="text-danger">*</span></label>
+                            <input type="date" th:field="*{birthDate}" th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'"
                                    class="form-control" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Telefone</label>
-                            <input type="text" th:field="*{phoneNumber}"
-                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
-                                   class="form-control" placeholder="Ex: 11999990000"
-                                   pattern="[0-9]{8,15}" title="Apenas dígitos (8 a 15)"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                            <label class="form-label">Localização</label>
+                            <input type="text" th:field="*{localization}" class="form-control" placeholder="Ex: Luanda" maxlength="150"/>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Salário (Kz) <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" min="0.01" th:field="*{salary}"
-                                   th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
-                                   class="form-control" placeholder="0,00" required/>
+                    </div>
+                    <div class="form-divider my-3">Dados Profissionais</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ocupação</label>
+                            <input type="text" th:field="*{ocupation}" th:classappend="${#fields.hasErrors('ocupation')} ? 'is-invalid'"
+                                   class="form-control" placeholder="Ex: Analista de Sistemas" maxlength="100"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('ocupation')}" th:errors="*{ocupation}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Salário (Kz) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="100000" th:field="*{salary}" th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
+                                   class="form-control" placeholder="100000.00" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold small">Departamento <span class="text-danger">*</span></label>
-                            <select name="departamentId"
-                                    th:classappend="${#fields.hasErrors('departament')} ? 'is-invalid'"
-                                    class="form-select">
-                                <option value="" disabled>— Selecione um departamento —</option>
+                            <label class="form-label">Departamento <span class="text-danger">*</span></label>
+                            <select name="departamentId" th:classappend="${#fields.hasErrors('departament')} ? 'is-invalid'" class="form-select">
+                                <option value="">— Selecione um departamento —</option>
                                 <option th:each="d : ${departamentos}" th:value="${d.id}" th:text="${d.name}">Depto</option>
                             </select>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('departament')}" th:errors="*{departament}"></div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0 px-4">
+                <div class="modal-footer">
                     <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary px-4">
-                        <i class="bi bi-floppy-fill me-2"></i>Salvar
+                        <i class="bi bi-floppy-fill me-2"></i>Guardar Funcionário
                     </button>
                 </div>
             </form>
@@ -247,85 +521,106 @@
     </div>
 </div>
 
-<!-- Modal Editar Funcionário -->
-<div class="modal fade" id="modalEditarFuncionario" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true"
-     th:if="${funcionarioEdit != null}">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content" style="border-radius:16px;border:none;">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="modalEditarLabel">
-                    <i class="bi bi-pencil-fill text-primary me-2"></i>Editar Funcionário
-                </h5>
+<!-- ═══════════════ MODAL EDITAR ═══════════════ -->
+<div class="modal fade" id="modalEditarFuncionario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="modal-icon" style="background:#fef3c7;color:#d97706;"><i class="bi bi-pencil-fill"></i></div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">Editar Funcionário</h5>
+                        <small class="text-muted">Actualize os dados do colaborador</small>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form th:action="@{/funcionarios/{id}/editar(id=${funcionarioEdit.id})}"
-                  th:object="${funcionarioEdit}" method="post" novalidate>
-                <div class="modal-body px-4 py-3">
+            <form th:action="@{/funcionarios/__${funcionarioEdit.id ?: 0}__/editar}"
+                  th:object="${funcionarioEdit}" method="post"
+                  enctype="multipart/form-data" novalidate>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center mb-3">
+                        <label for="editFotoInput" style="cursor:pointer;">
+                            <div class="photo-upload-wrap">
+                                <div class="photo-preview-circle" id="editPreviewCircle"
+                                     th:style="${funcionarioEdit.photoUrl != null and !#strings.isEmpty(funcionarioEdit.photoUrl)} ? 'display:none' : ''">
+                                    <span th:text="${funcionarioEdit.name != null and !#strings.isEmpty(funcionarioEdit.name) ? #strings.substring(funcionarioEdit.name,0,1).toUpperCase() : '?'}">?</span>
+                                </div>
+                                <img id="editPreviewImg" alt="foto"
+                                     th:src="${funcionarioEdit.photoUrl ?: ''}"
+                                     th:style="${funcionarioEdit.photoUrl != null and !#strings.isEmpty(funcionarioEdit.photoUrl)} ? 'display:block;position:absolute;top:0;left:0;width:90px;height:90px;border-radius:50%;object-fit:cover;border:2.5px solid #e2e8f0;' : 'display:none;position:absolute;top:0;left:0;width:90px;height:90px;border-radius:50%;object-fit:cover;border:2.5px solid #e2e8f0;'"/>
+                                <div class="photo-upload-btn"><i class="bi bi-camera-fill"></i></div>
+                            </div>
+                        </label>
+                        <input type="file" id="editFotoInput" name="foto" accept="image/*" class="d-none"
+                               onchange="previewFoto(this, 'editPreviewImg', 'editPreviewCircle')"/>
+                    </div>
+                    <div class="form-divider mb-3">Informações Pessoais</div>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Nome <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{name}"
-                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
+                            <label class="form-label">Nome completo <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'"
                                    class="form-control" minlength="3" maxlength="100" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold small">E-mail <span class="text-danger">*</span></label>
-                            <input type="email" th:field="*{email}"
-                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                            <label class="form-label">E-mail <span class="text-danger">*</span></label>
+                            <input type="email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
                                    class="form-control" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Ocupação</label>
-                            <input type="text" th:field="*{ocupation}"
-                                   class="form-control" maxlength="100"/>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold small">Localização</label>
-                            <input type="text" th:field="*{localization}"
-                                   class="form-control" maxlength="150"/>
+                        <div class="col-md-4">
+                            <label class="form-label">Telefone</label>
+                            <input type="text" th:field="*{phoneNumber}" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
+                                   class="form-control" pattern="[0-9]{8,15}"/>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Data de Nascimento <span class="text-danger">*</span></label>
-                            <input type="date" th:field="*{birthDate}"
+                            <label class="form-label">Data de Nascimento <span class="text-danger">*</span></label>
+                            <!--
+                                FIX CRÍTICO: th:field em LocalDate usa toString() que gera "29/09/2009"
+                                mas input[type=date] exige "yyyy-MM-dd".
+                                Usamos th:name + th:value com #temporals.format numa única expressão.
+                            -->
+                            <input type="date"
+                                   th:name="birthDate"
+                                   th:value="${funcionarioEdit.birthDate != null ? #temporals.format(funcionarioEdit.birthDate, 'yyyy-MM-dd') : ''}"
                                    th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'"
                                    class="form-control" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Telefone</label>
-                            <input type="text" th:field="*{phoneNumber}"
-                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
-                                   class="form-control" pattern="[0-9]{8,15}"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                            <label class="form-label">Localização</label>
+                            <input type="text" th:field="*{localization}" class="form-control" maxlength="150"/>
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold small">Salário (Kz)  <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" min="0.01" th:field="*{salary}"
-                                   th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
+                    </div>
+                    <div class="form-divider my-3">Dados Profissionais</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ocupação</label>
+                            <input type="text" th:field="*{ocupation}" class="form-control" maxlength="100"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Salário (Kz) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="100000" th:field="*{salary}" th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid'"
                                    class="form-control" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('salary')}" th:errors="*{salary}"></div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label fw-semibold small">Departamento <span class="text-danger">*</span></label>
-                            <select name="departamentId"
-                                    th:classappend="${#fields.hasErrors('departament')} ? 'is-invalid'"
-                                    class="form-select" required>
+                            <label class="form-label">Departamento <span class="text-danger">*</span></label>
+                            <select name="departamentId" th:classappend="${#fields.hasErrors('departament')} ? 'is-invalid'" class="form-select" required>
                                 <option value="">— Selecione um departamento —</option>
-                                <option th:each="d : ${departamentos}"
-                                        th:value="${d.id}"
-                                        th:text="${d.name}"
+                                <option th:each="d : ${departamentos}" th:value="${d.id}" th:text="${d.name}"
                                         th:selected="${funcionarioEdit.departament != null and funcionarioEdit.departament.id == d.id}">Depto</option>
                             </select>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('departament')}" th:errors="*{departament}"></div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0 px-4">
+                <div class="modal-footer">
                     <a th:href="@{/funcionarios}" class="btn btn-light px-4">Cancelar</a>
-                    <button type="submit" class="btn btn-primary px-4">
-                        <i class="bi bi-floppy-fill me-2"></i>Atualizar
+                    <button type="submit" class="btn btn-primary px-4" style="background:#d97706;border-color:#d97706;">
+                        <i class="bi bi-floppy-fill me-2"></i>Actualizar
                     </button>
                 </div>
             </form>
@@ -333,21 +628,62 @@
     </div>
 </div>
 
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const abrirModalNovo = /*[[${abrirModalNovo}]]*/ false;
+    const abrirModalNovo   = /*[[${abrirModalNovo}]]*/ false;
     const abrirModalEditar = /*[[${abrirModalEditar}]]*/ null;
 
     document.addEventListener('DOMContentLoaded', function () {
-      if (abrirModalNovo) {
-        new bootstrap.Modal(document.getElementById('modalNovoFuncionario')).show();
-      }
-      if (abrirModalEditar) {
-        const el = document.getElementById('modalEditarFuncionario');
-        if (el) new bootstrap.Modal(el).show();
-      }
+        if (abrirModalNovo)   new bootstrap.Modal(document.getElementById('modalNovoFuncionario')).show();
+        if (abrirModalEditar) new bootstrap.Modal(document.getElementById('modalEditarFuncionario')).show();
     });
+
+    function previewFoto(input, imgId, circleId) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img    = document.getElementById(imgId);
+            const circle = document.getElementById(circleId);
+            img.src = e.target.result;
+            img.style.display = 'block';
+            if (circle) circle.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function abrirViewFromBtn(btn) {
+        const d = btn.dataset;
+        abrirView(d.id, d.nome, d.email, d.ocupacao, d.depto, d.salario, d.nascimento, d.telefone, d.localizacao, d.photo);
+    }
+
+    function abrirView(id, nome, email, ocupacao, depto, salario, nascimento, telefone, localizacao, photoUrl) {
+        document.getElementById('viewName').textContent        = nome || '—';
+        document.getElementById('viewRole').textContent        = (ocupacao && ocupacao !== '—') ? ocupacao : 'Sem ocupação definida';
+        document.getElementById('viewDepto').textContent       = depto || '—';
+        document.getElementById('viewSalario').textContent     = 'Kz ' + Number(salario).toLocaleString('pt-AO', {minimumFractionDigits: 2});
+        document.getElementById('viewEmail').textContent       = email || '—';
+        document.getElementById('viewTelefone').textContent    = telefone || '—';
+        document.getElementById('viewNascimento').textContent  = nascimento || '—';
+        document.getElementById('viewLocalizacao').textContent = localizacao || '—';
+
+        const img     = document.getElementById('viewPhotoImg');
+        const initial = document.getElementById('viewPhotoInitial');
+
+        if (photoUrl && photoUrl.trim() !== '') {
+            img.src = photoUrl;
+            img.style.display = 'block';
+            initial.style.display = 'none';
+        } else {
+            img.style.display = 'none';
+            initial.style.display = 'block';
+            initial.textContent = nome ? nome.charAt(0).toUpperCase() : '?';
+        }
+
+        new bootstrap.Modal(document.getElementById('modalVerFuncionario')).show();
+    }
     /*]]>*/
 </script>
 </body>

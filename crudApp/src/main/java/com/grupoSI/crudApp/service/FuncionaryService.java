@@ -8,6 +8,7 @@ import com.grupoSI.crudApp.database.repository.FuncionaryRepository;
 import com.grupoSI.crudApp.database.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -25,18 +26,24 @@ public class FuncionaryService {
         this.userRepository = userRepository;
     }
 
-    // NOVO — lista só os funcionários do utilizador autenticado
     public List<Funcionary> findByUser(Long userId) {
         return funcionaryRepository.findByUserId(userId);
     }
 
-    // Mantido para uso interno
+    public List<Funcionary> findAllIncludingDeleted(Long userId) {
+        return funcionaryRepository.findAllIncludingDeletedByUserId(userId);
+    }
+
+    @Transactional
+    public void deletePermanente(Long id) {
+        funcionaryRepository.deletePermanente(id);
+    }
+
     public Funcionary findById(Long id) {
         return funcionaryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com ID: " + id));
     }
 
-    // NOVO — busca por ID garantindo que pertence ao utilizador (segurança)
     public Funcionary findByIdAndUser(Long id, Long userId) {
         return funcionaryRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado ou sem permissão."));
@@ -50,7 +57,7 @@ public class FuncionaryService {
                 .orElseThrow(() -> new RuntimeException("Utilizador não encontrado com ID: " + userId));
 
         if (funcionaryRepository.existsByEmail(funcionary.getEmail())) {
-            throw new IllegalArgumentException("Já existe um funcionário com este e-mail.");
+            throw new IllegalArgumentException("Já existe um funcionário activo com este e-mail.");
         }
 
         funcionary.setDepartament(departament);
@@ -60,14 +67,13 @@ public class FuncionaryService {
 
     @Transactional
     public Funcionary update(Long id, Funcionary novosDados, Long departamentId, Long userId) {
-        // Garante que o funcionário pertence ao utilizador autenticado
         Funcionary existente = findByIdAndUser(id, userId);
 
         Departament departament = departamentRepository.findById(departamentId)
                 .orElseThrow(() -> new RuntimeException("Departamento não encontrado com ID: " + departamentId));
 
         if (funcionaryRepository.existsByEmailAndIdNot(novosDados.getEmail(), id)) {
-            throw new IllegalArgumentException("Já existe outro funcionário com este e-mail.");
+            throw new IllegalArgumentException("Já existe outro funcionário activo com este e-mail.");
         }
 
         existente.setName(novosDados.getName());
@@ -83,8 +89,12 @@ public class FuncionaryService {
 
     @Transactional
     public void delete(Long id, Long userId) {
-        // Garante que o funcionário pertence ao utilizador autenticado
         Funcionary funcionary = findByIdAndUser(id, userId);
-        funcionaryRepository.delete(funcionary);
+        funcionaryRepository.delete(funcionary); // @SoftDelete faz UPDATE deleted=true
+    }
+
+    @Transactional
+    public void restore(Long id) {
+        funcionaryRepository.restore(id);
     }
 }

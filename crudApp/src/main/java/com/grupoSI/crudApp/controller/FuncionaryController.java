@@ -12,7 +12,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/funcionarios")
@@ -30,30 +39,72 @@ public class FuncionaryController {
         this.userRepository = userRepository;
     }
 
-    // Método auxiliar — obtém o utilizador autenticado da BD
+    // ── Utilitários ──────────────────────────────────────────────────────────
+
     private User getAuthenticatedUser(UserDetails userDetails) {
         return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("Utilizador autenticado não encontrado."));
     }
 
+    /** Preenche os atributos comuns que a vista lista.html sempre precisa. */
+    private void preencherModelLista(Model model, User user) {
+        List<Funcionary> funcionarios = funcionaryService.findByUser(user.getId());
+
+        double massaSalarial = funcionarios.stream()
+                .mapToDouble(Funcionary::getSalary)
+                .sum();
+
+        long totalDepartamentos = funcionarios.stream()
+                .map(f -> f.getDepartament() != null ? f.getDepartament().getName() : null)
+                .filter(n -> n != null)
+                .distinct()
+                .count();
+
+        model.addAttribute("funcionarios", funcionarios);
+        model.addAttribute("massaSalarial", massaSalarial);
+        model.addAttribute("totalDepartamentos", totalDepartamentos);
+        model.addAttribute("departamentos", departamentRepository.findAll());
+        model.addAttribute("abrirModalNovo", false);
+        model.addAttribute("abrirModalEditar", false);
+
+        // Garante que os objectos dos modais nunca são null no Thymeleaf
+        if (!model.containsAttribute("novoFuncionario")) {
+            model.addAttribute("novoFuncionario", new Funcionary());
+        }
+        if (!model.containsAttribute("funcionarioEdit")) {
+            model.addAttribute("funcionarioEdit", new Funcionary());
+        }
+    }
+
+    // ── GET /funcionarios ────────────────────────────────────────────────────
+
     @GetMapping
     public String listarTodos(Model model,
                               @AuthenticationPrincipal UserDetails userDetails) {
         User user = getAuthenticatedUser(userDetails);
-        // Só mostra os funcionários deste utilizador
-        model.addAttribute("funcionarios", funcionaryService.findByUser(user.getId()));
-        model.addAttribute("novoFuncionario", new Funcionary());
-        model.addAttribute("departamentos", departamentRepository.findAll());
+        preencherModelLista(model, user);
         return "funcionarios/lista";
     }
+
+    // ── POST /funcionarios/novo ──────────────────────────────────────────────
 
     @PostMapping("/novo")
     public String criar(@Valid @ModelAttribute("novoFuncionario") Funcionary funcionary,
                         BindingResult result,
                         @RequestParam(required = false) Long departamentId,
                         @AuthenticationPrincipal UserDetails userDetails,
+                        @RequestParam("foto") MultipartFile foto,
                         Model model,
-                        RedirectAttributes redirectAttributes) {
+                        RedirectAttributes redirectAttributes) throws IOException {
+
+        // Processa foto antes de validar para não perder o ficheiro em caso de erro
+        if (foto != null && !foto.isEmpty()) {
+            String nomeArquivo = UUID.randomUUID() + "_" + foto.getOriginalFilename();
+            Path destino = Paths.get("uploads/" + nomeArquivo);
+            Files.createDirectories(destino.getParent());
+            foto.transferTo(destino);
+            funcionary.setPhotoUrl("/uploads/" + nomeArquivo);
+        }
 
         if (departamentId == null) {
             result.rejectValue("departament", "departament.obrigatorio", "Selecione um departamento.");
@@ -61,8 +112,7 @@ public class FuncionaryController {
 
         if (result.hasErrors()) {
             User user = getAuthenticatedUser(userDetails);
-            model.addAttribute("funcionarios", funcionaryService.findByUser(user.getId()));
-            model.addAttribute("departamentos", departamentRepository.findAll());
+            preencherModelLista(model, user);
             model.addAttribute("abrirModalNovo", true);
             return "funcionarios/lista";
         }
@@ -72,29 +122,30 @@ public class FuncionaryController {
             funcionaryService.save(funcionary, departamentId, user.getId());
             redirectAttributes.addFlashAttribute("sucesso", "Funcionário criado com sucesso!");
         } catch (IllegalArgumentException e) {
-            User user = getAuthenticatedUser(userDetails);
             result.rejectValue("email", "email.duplicado", e.getMessage());
-            model.addAttribute("funcionarios", funcionaryService.findByUser(user.getId()));
-            model.addAttribute("departamentos", departamentRepository.findAll());
+            User user = getAuthenticatedUser(userDetails);
+            preencherModelLista(model, user);
             model.addAttribute("abrirModalNovo", true);
             return "funcionarios/lista";
         }
+
         return "redirect:/funcionarios";
     }
+
+    // ── GET /funcionarios/{id}/editar ────────────────────────────────────────
 
     @GetMapping("/{id}/editar")
     public String formularioEditar(@PathVariable Long id,
                                    Model model,
                                    @AuthenticationPrincipal UserDetails userDetails) {
         User user = getAuthenticatedUser(userDetails);
-        model.addAttribute("funcionarios", funcionaryService.findByUser(user.getId()));
-        model.addAttribute("novoFuncionario", new Funcionary());
-        // Verifica que o funcionário pertence ao utilizador
+        preencherModelLista(model, user);
         model.addAttribute("funcionarioEdit", funcionaryService.findByIdAndUser(id, user.getId()));
-        model.addAttribute("departamentos", departamentRepository.findAll());
         model.addAttribute("abrirModalEditar", id);
         return "funcionarios/lista";
     }
+
+    // ── POST /funcionarios/{id}/editar ───────────────────────────────────────
 
     @PostMapping("/{id}/editar")
     public String atualizar(@PathVariable Long id,
@@ -111,9 +162,8 @@ public class FuncionaryController {
 
         if (result.hasErrors()) {
             User user = getAuthenticatedUser(userDetails);
-            model.addAttribute("funcionarios", funcionaryService.findByUser(user.getId()));
-            model.addAttribute("novoFuncionario", new Funcionary());
-            model.addAttribute("departamentos", departamentRepository.findAll());
+            preencherModelLista(model, user);
+            model.addAttribute("funcionarioEdit", novosDados);
             model.addAttribute("abrirModalEditar", id);
             return "funcionarios/lista";
         }
@@ -123,16 +173,18 @@ public class FuncionaryController {
             funcionaryService.update(id, novosDados, departamentId, user.getId());
             redirectAttributes.addFlashAttribute("sucesso", "Funcionário atualizado com sucesso!");
         } catch (IllegalArgumentException e) {
-            User user = getAuthenticatedUser(userDetails);
             result.rejectValue("email", "email.duplicado", e.getMessage());
-            model.addAttribute("funcionarios", funcionaryService.findByUser(user.getId()));
-            model.addAttribute("novoFuncionario", new Funcionary());
-            model.addAttribute("departamentos", departamentRepository.findAll());
+            User user = getAuthenticatedUser(userDetails);
+            preencherModelLista(model, user);
+            model.addAttribute("funcionarioEdit", novosDados);
             model.addAttribute("abrirModalEditar", id);
             return "funcionarios/lista";
         }
+
         return "redirect:/funcionarios";
     }
+
+    // ── POST /funcionarios/{id}/eliminar ─────────────────────────────────────
 
     @PostMapping("/{id}/eliminar")
     public String eliminar(@PathVariable Long id,
@@ -146,5 +198,52 @@ public class FuncionaryController {
             redirectAttributes.addFlashAttribute("erro", "Erro ao remover: " + e.getMessage());
         }
         return "redirect:/funcionarios";
+    }
+
+    // ── POST /funcionarios/{id}/restaurar ────────────────────────────────────
+
+    @PostMapping("/{id}/restaurar")
+    public String restaurar(@PathVariable Long id,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            funcionaryService.restore(id);
+            redirectAttributes.addFlashAttribute("sucesso", "Funcionário restaurado com sucesso!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("erro", "Erro ao restaurar: " + e.getMessage());
+        }
+        return "redirect:/funcionarios";
+    }
+
+    // ── POST /funcionarios/{id}/eliminar-permanente ──────────────────────────
+
+    @PostMapping("/{id}/eliminar-permanente")
+    public String eliminarPermanente(@PathVariable Long id,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            funcionaryService.deletePermanente(id);
+            redirectAttributes.addFlashAttribute("sucesso", "Funcionário eliminado permanentemente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("erro", "Erro: " + e.getMessage());
+        }
+        return "redirect:/funcionarios/lixeira";
+    }
+
+    // ── GET /funcionarios/lixeira ────────────────────────────────────────────
+
+    @GetMapping("/lixeira")
+    public String lixeira(Model model,
+                          @AuthenticationPrincipal UserDetails userDetails) {
+        User user = getAuthenticatedUser(userDetails);
+
+        List<Funcionary> todos    = funcionaryService.findAllIncludingDeleted(user.getId());
+        List<Funcionary> activos  = funcionaryService.findByUser(user.getId());
+        List<Long> activosIds     = activos.stream().map(Funcionary::getId).collect(Collectors.toList());
+
+        List<Funcionary> eliminados = todos.stream()
+                .filter(f -> !activosIds.contains(f.getId()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("eliminados", eliminados);
+        return "funcionarios/lixeira";
     }
 }

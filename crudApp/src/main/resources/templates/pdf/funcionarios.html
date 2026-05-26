@@ -2,36 +2,131 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>PDF Funcionários</title>
-
+    <title>Relatório de Funcionários — Sistema de Gestão de Funcionários</title>
     <style>
-        body { font-family: Arial; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #000; padding: 8px; }
-        th { background: #eee; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #1e293b; background: #fff; }
+
+        /* Estrutura do Cabeçalho adaptada para compatibilidade com PDF */
+        .header-table {
+            width: 100%;
+            background: #1e3a5f; color: #fff;
+            padding: 20px 30px;
+            margin-bottom: 24px;
+            border-collapse: collapse;
+        }
+        .header-brand-title { font-size: 18px; font-weight: 700; color: #ffffff; }
+        .header-sub { font-size: 11px; color: rgba(255,255,255,.7); margin-top: 2px; }
+        .header-meta { text-align: right; font-size: 10px; color: rgba(255,255,255,.7); vertical-align: middle; }
+
+        /* Estrutura de Sumário adaptada para PDF (sem Flexbox) */
+        .summary-table {
+            width: calc(100% - 60px);
+            margin: 0 30px 24px;
+            border-collapse: separate;
+            border-spacing: 16px 0;
+        }
+        .summary-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 16px;
+            width: 50%;
+        }
+        .summary-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+        .summary-value { font-size: 18px; font-weight: 700; color: #1e3a5f; }
+
+        .section-title {
+            margin: 0 30px 12px; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .08em; color: #64748b;
+            padding-bottom: 6px; border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* Tabelas de Dados */
+        table.data-table { width: calc(100% - 60px); margin: 0 30px; border-collapse: collapse; }
+        table.data-table thead tr { background: #1e3a5f; color: #fff; }
+        table.data-table th { padding: 10px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; text-align: left; }
+        table.data-table tbody tr { border-bottom: 1px solid #f1f5f9; page-break-inside: avoid; }
+        table.data-table tbody tr:nth-child(even) { background: #f8fafc; }
+        table.data-table td { padding: 9px 12px; font-size: 11px; color: #334155; vertical-align: middle; }
+
+        /* Badges */
+        .badge {
+            display: inline-block; padding: 3px 8px; border-radius: 12px;
+            font-size: 10px; font-weight: 600; text-align: center;
+        }
+        .badge-depto { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+        .badge-salary { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+
+        /* Rodapé adaptado para PDF */
+        .footer-table {
+            width: calc(100% - 60px);
+            margin: 40px 30px 20px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+            font-size: 10px; color: #94a3b8;
+        }
     </style>
 </head>
 <body>
 
-<h2>Lista de Funcionários</h2>
+<table class="header-table">
+    <tr>
+        <td>
+            <div class="header-brand-title">Sistema de Gestão de Funcionários</div>
+            <div class="header-sub">Relatório Gerencial de Recursos Humanos</div>
+        </td>
+        <td class="header-meta">
+            <strong>Relatório de Funcionários</strong>
+            <div th:text="'Gerado em: ' + ${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}">00/00/0000 00:00</div>
+        </td>
+    </tr>
+</table>
 
-<table>
+<table class="summary-table">
+    <tr>
+        <td class="summary-card">
+            <div class="summary-label">Total de Funcionários</div>
+            <div class="summary-value" th:text="${#lists.size(funcionarios)}">0</div>
+        </td>
+        <td class="summary-card">
+            <div class="summary-label">Massa Salarial Mensal</div>
+            <div class="summary-value" th:text="${massaSalarial != null ? #numbers.formatDecimal(massaSalarial, 1, 'POINT', 2, 'COMMA') + ' Kz' : '0,00 Kz'}">0,00 Kz</div>
+        </td>
+    </tr>
+</table>
+
+<div class="section-title">Lista de Colaboradores</div>
+
+<table class="data-table">
     <thead>
     <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Ocupação</th>
-        <th>Departamento</th>
+        <th style="width: 5%;">#</th>
+        <th style="width: 25%;">Nome</th>
+        <th style="width: 20%;">E-mail</th>
+        <th style="width: 15%;">Ocupação</th>
+        <th style="width: 15%;">Departamento</th>
+        <th style="width: 12%;">Salário</th>
+        <th style="width: 8%;">Nascimento</th>
     </tr>
     </thead>
+    <tbody>
+    <tr th:each="f, i : ${funcionarios}">
+        <td th:text="${i.count}">1</td>
+        <td th:text="${f.name}">Nome</td>
+        <td th:text="${f.email}">email@empresa.com</td>
+        <td th:text="${f.ocupation ?: '—'}">Ocupação</td>
+        <td><span class="badge badge-depto" th:text="${f.departament != null ? f.departament.name : '—'}">Depto</span></td>
+        <td><span class="badge badge-salary" th:text="${f.salary != null ? #numbers.formatDecimal(f.salary, 1, 'POINT', 2, 'COMMA') + ' Kz' : '—'}">0,00 Kz</span></td>
+        <td th:text="${f.birthDate != null ? #temporals.format(f.birthDate, 'dd/MM/yyyy') : '—'}">00/00/0000</td>
+    </tr>
+    </tbody>
+</table>
 
-    <tr th:each="f : ${funcionarios}">
-        <td th:text="${f.id != null ? f.id : 'N/A'}"></td>
-        <td th:text="${f.name != null ? f.name : ''}"></td>
-        <td th:text="${f.email != null ? f.email : ''}"></td>
-        <td th:text="${f.ocupation != null ? f.ocupation : ''}"></td>
-        <td th:text="${f.departament != null ? f.departament.name : ''}"></td>
+<table class="footer-table">
+    <tr>
+        <td>Sistema de Gestão de Funcionários e Departamentos</td>
+        <td style="text-align: right;" th:text="'Total: ' + ${#lists.size(funcionarios)} + ' colaborador(es)'">0 colaborador(es)</td>
     </tr>
 </table>
 

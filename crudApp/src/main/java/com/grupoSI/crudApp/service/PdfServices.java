@@ -21,6 +21,10 @@ public class PdfServices {
 
         Context context = new Context();
         context.setVariable("funcionarios", funcionarios);
+        double massaSalarial = funcionarios.stream()
+                .mapToDouble(Funcionary::getSalary)
+                .sum();
+        context.setVariable("massaSalarial", massaSalarial);
 
         String html = templateEngine.process("pdf/funcionarios", context);
 
